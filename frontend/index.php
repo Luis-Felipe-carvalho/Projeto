@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta Nome="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FuturePath - Computer Science Student</title>
+    <title>Projeto de vida - Estudante de programação</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,21 +13,23 @@
     <!-- Navigation -->
     <header id="navbar">
         <div class="container">
-            <a href="#" class="logo">Projeto de <span>Vida</span></a>
+            <a href="#Inicio" class="logo">Projeto de <span>Vida</span></a>
             <nav>
                 <ul class="desktop-nav">
                     <li><a href="#Inicio">Início</a></li>
-                    <li><a href="#About">Sobre</a></li>
+                    <li><a href="#Sobre">Sobre</a></li>
                     <li><a href="#Educacao">Educação</a></li>
                     <li><a href="#Carreira">Carreira</a></li>
                     <li><a href="#Contato">Contato</a></li>
+                    <li>
                 </ul>
+
                 <button id="mobile-menu-btn" aria-label="Toggle menu">
                     <span>
                         <li><a href="#Inicio">Início</a></li>
                     </span>
                     <span>
-                        <li><a href="#About">Sobre</a></li>
+                        <li><a href="#Sobre">Sobre</a></li>
                     </span>
                     <span>
                         <li><a href="#Educacao">Educação</a></li>
@@ -46,7 +48,7 @@
         <div id="mobile-menu">
             <ul>
                 <li><a href="#Inicio">Início</a></li>
-                <li><a href="#About">Sobre</a></li>
+                <li><a href="#Sobre">Sobre</a></li>
                 <li><a href="#Educacao">Educação</a></li>
                 <li><a href="#Carreira">Carreira</a></li>
                 <li><a href="#Contato">Contato</a></li>
@@ -55,7 +57,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <section id="Inicio" class="hero">
         <div class="container">
             <div class="tag">SENAI/SESI programador & Futuro Estudante de Ciência da Computação</div>
             <h1>
@@ -66,11 +68,11 @@
                 Explorando o caminho do ensino médio ao desenvolvimento profissional, com foco na construção de uma carreira em ciência da computação e tecnologia.
             </p>
             <div class="buttons">
-                <a href="#about" class="btn btn-primary">Sobre mim</a>
-                <a href="#education" class="btn btn-secondary">Saiba mais</a>
+                <a href="#Sobre" class="btn btn-primary">Sobre mim</a>
+                <a href="#Educacao" class="btn btn-secondary">Saiba mais</a>
             </div>
             <div class="scroll-indicator">
-                <a href="#about">
+                <a href="#Sobre">
                     <span>
                         Role para baixo</span>
                     <div class="arrow-down"></div>
@@ -79,8 +81,8 @@
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="section">
+    <!-- Sobre Section -->
+    <section id="Sobre" class="section">
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">SOBRE MIM</span>
@@ -124,8 +126,8 @@
         </div>
     </section>
 
-    <!-- Education Section -->
-    <section id="education" class="section section-alt">
+    <!-- Educacao Section -->
+    <section id="Educacao" class="section section-alt">
         <div class="container">
             <div class="section-header">
                 <div class="icon-circle">
@@ -191,19 +193,19 @@
         </div>
     </section>
 
-    <!-- Career Section -->
-    <section id="career" class="section">
+    <!-- Carreira Section -->
+    <section id="Carreira" class="section">
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">ASPIRAÇÕES DE CARREIRA</span>
                 <h2>Construindo um Futuro em <span class="gradient-text">tecnologia</span></h2>
                 <p class="section-description">
-                Explorando possíveis caminhos de carreira no setor de tecnologia em constante evolução, com foco em inovação e resolução de problemas.
+                    Explorando possíveis caminhos de carreira no setor de tecnologia em constante evolução, com foco em inovação e resolução de problemas.
                 </p>
             </div>
 
-            <div class="career-paths">
-                <div class="career-card">
+            <div class="Carreira-paths">
+                <div class="Carreira-card">
                     <div class="icon">
                         <div class="icon-laptop"></div>
                     </div>
@@ -212,18 +214,18 @@
                     <div class="skills">
                         <span class="skill-badge">Linguagens de programação</span>
                         <span class="skill-badge">
-                        Arquitetura de Software</span>
+                            Arquitetura de Software</span>
                         <span class="skill-badge">Depurando</span>
                         <span class="skill-badge">Testando</span>
                     </div>
                 </div>
 
-                <div class="career-card">
+                <div class="Carreira-card">
                     <div class="icon">
                         <div class="icon-globe"></div>
                     </div>
                     <h3>
-                    Desenvolvedor Web</h3>
+                        Desenvolvedor Web</h3>
                     <p>Projetar, implementar e manter infraestrutura de sistemas complexos, garantindo confiabilidade, escalabilidade e segurança.</p>
                     <div class="skills">
                         <span class="skill-badge">Front-end Frameworks</span>
@@ -233,7 +235,7 @@
                     </div>
                 </div>
 
-                <div class="career-card">
+                <div class="Carreira-card">
                     <div class="icon">
                         <div class="icon-server"></div>
                     </div>
@@ -247,12 +249,12 @@
                     </div>
                 </div>
 
-                <div class="career-card">
+                <div class="Carreira-card">
                     <div class="icon">
                         <div class="icon-code"></div>
                     </div>
                     <h3>
-                    Engenheiro de IA/ML</h3>
+                        Engenheiro de IA/ML</h3>
                     <p>Desenvolver sistemas inteligentes que podem aprender com dados e tomar decisões ou fazer previsões, ultrapassando os limites do que é possível.</p>
                     <div class="skills">
                         <span class="skill-badge">Machine Learning</span>
@@ -263,21 +265,21 @@
                 </div>
             </div>
 
-            <div class="career-plan">
+            <div class="Carreira-plan">
                 <h3>Meu Plano de Desenvolvimento de Carreira</h3>
                 <ol>
                     <li><span>1</span>Construir uma base sólida em fundamentos da ciência da computação durante o ensino médio</li>
                     <li><span>2</span>Desenvolver projetos pessoais para aplicar conhecimentos teóricos e construir um portfólio</li>
                     <li><span>3</span>Prosseguir com o ensino superior em ciência da computação ou área relacionada</li>
                     <li><span>4</span>Ganhar experiência de estágio para entender as práticas do setor</li>
-                    <li><span>5</span>Especializar-se em uma área específica com base em interesses e demanda do setor/li>
+                    <li><span>5</span>Especializar-se em uma área específica com base em interesses e demanda do setor</li>
                 </ol>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="section section-alt">
+    <!-- Contato Section -->
+    <section id="Contato" class="section section-alt">
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">ENTRE EM CONTATO</span>
@@ -287,10 +289,10 @@
                 </p>
             </div>
 
-            <div class="contact-container">
-                <div class="contact-form">
+            <div class="Contato-container">
+                <div class="Contato-form">
                     <h3>Me mande uma Mensagem</h3>
-                    <form id="contactForm">
+                    <form id="ContatoForm">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="Nome">Nome</label>
@@ -313,7 +315,7 @@
                     </form>
                 </div>
 
-                <div class="contact-info">
+                <div class="Contato-info">
                     <h3>Informações de contato</h3>
                     <div class="info-item">
                         <div class="icon-mail"></div>
