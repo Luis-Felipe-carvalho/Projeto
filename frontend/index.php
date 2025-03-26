@@ -21,7 +21,7 @@
                     <li><a href="#Educacao">Educação</a></li>
                     <li><a href="#Carreira">Carreira</a></li>
                     <li><a href="#Contato">Contato</a></li>
-                    <li>
+                    <li><a href="../login-google/includes/backend/View/profile.php">Perfil</a></li>
                 </ul>
 
                 <button id="mobile-menu-btn" aria-label="Toggle menu">
@@ -40,6 +40,9 @@
                     <span>
                         <li><a href="#Contato">Contato</a></li>
                     </span>
+                    <span>
+                    <li><a href="Perfil.php">Perfil</a></li>
+                    </span>
                 </button>
             </nav>
         </div>
@@ -52,6 +55,7 @@
                 <li><a href="#Educacao">Educação</a></li>
                 <li><a href="#Carreira">Carreira</a></li>
                 <li><a href="#Contato">Contato</a></li>
+                <li><a href="Perfil.php">Perfil</a></li>
             </ul>
         </div>
     </header>
@@ -59,7 +63,7 @@
     <!-- Hero Section -->
     <section id="Inicio" class="hero">
         <div class="container">
-            <div class="tag">SENAI/SESI programador & Futuro Estudante de Ciência da Computação</div>
+            <div class="tag">SESI/SENAI programador & Futuro Estudante de Ciência da Computação</div>
             <h1>
                 <span class="title-line">Criando um futuro com</span>
                 <span class="gradient-text">Programação & Inovação</span>

@@ -364,6 +364,10 @@ h1 {
     gap: 24px;
 }
 
+.feature img{
+    border-radius: 50%;
+}
+
 .feature-card {
     background-color: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
@@ -1029,5 +1033,6 @@ footer p:last-child {
     }
 }
 
-
-
+.imagem_bola{
+    border-radius: 50%;
+}
