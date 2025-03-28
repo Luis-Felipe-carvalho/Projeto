@@ -33,15 +33,15 @@ $info = $User::getinfo();
     <!-- Navigation -->
     <header id="navbar">
         <div class="container">
-            <a href="#Inicio" class="logo">Projeto de <span>Vida</span></a>
+            <a href="../../backend/View/index.php" class="logo">Projeto de <span>Vida</span></a>
             <nav>
                 <ul class="desktop-nav">
-                    <li><a href="../../../index.php?#Inicio">Início</a></li>
-                    <li><a href="index.php?#Sobre">Sobre</a></li>
-                    <li><a href="index.php?#Educacao">Educação</a></li>
-                    <li><a href="index.php?#Carreira">Carreira</a></li>
-                    <li><a href="index.php?#Contato">Contato</a></li>
-                    <li><a href="index.php?Perfil.php">Perfil</a></li>
+                    <li><a href="#Inicio">Início</a></li>
+                    <li><a href="#Sobre">Sobre</a></li>
+                    <li><a href="#Educacao">Educação</a></li>
+                    <li><a href="#Carreira">Carreira</a></li>
+                    <li><a href="#Contato">Contato</a></li>
+                    <li><a href="profile.php">Perfil</a></li>
                 </ul>
 
                 <button id="mobile-menu-btn" aria-label="Toggle menu">
@@ -91,7 +91,6 @@ $info = $User::getinfo();
                     <br>
                     <?= $info['email'] ?>
                     <br>
-                    info
                     <br>
 
                     <a href="logout.php">

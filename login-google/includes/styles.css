@@ -23,10 +23,6 @@ html {
 }
 
 body {
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     color: var(--foreground);
@@ -366,10 +362,6 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 24px;
-}
-
-.feature img{
-    border-radius: 50%;
 }
 
 .feature-card {
@@ -1037,7 +1029,5 @@ footer p:last-child {
     }
 }
 
-.imagem_bola{
-    border-radius: 50%;
-}
+
 

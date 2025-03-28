@@ -6,29 +6,28 @@ class UserModel
     {
         $this->pdo = $pdo;
     }
-    function register($username, $password, $data_de_registro)
+    function register($username, $email, $password, $data_de_registro)
     {
         $sql = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (empty($results)) {
-            $sql = "INSERT INTO users(username,password, data_de_registro) VALUES (?,?,?)";
+            $sql = "INSERT INTO users(username, email ,password, data_de_registro) VALUES (?,?,?,?)";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$username, $password, $data_de_registro]);
+            $stmt->execute([$username, $email, $password, $data_de_registro]);
             return true;
         } else {
             return false;
         }
     }
 
-    public function login($username, $password)
+    public function login($username,$email, $password)
     {
-        $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        $sql = "SELECT * FROM users WHERE username = ? AND email = ? AND password = ?";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$username, $password]);
-        $stmt = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $stmt;
+        $stmt->execute([$username,$email, $password]);
+        return  $stmt->fetch(PDO::FETCH_ASSOC);
     }
     public function getUserFromID($id)
     {

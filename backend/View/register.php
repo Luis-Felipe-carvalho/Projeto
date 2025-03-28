@@ -1,17 +1,18 @@
 <?php
-include_once  'C:\Turma2\xampp\htdocs\Projeto de vida\Controller\UserController.php';
-include_once 'C:\Turma2\xampp\htdocs\Projeto de vida\config.php';
+include_once  'C:/Turma2/xampp/htdocs/Projeto-de-vida/backend/Controller/UserController.php';
+include_once 'C:/Turma2/xampp/htdocs/Projeto-de-vida/config.php';
 
 $Controller = new UserController($pdo);
 
 if (!empty($_POST)) {
     $username = $_POST['username'];
     $password = $_POST['password'];
+    $email = $_POST['email'];
     $currentdatetime = new DateTime('now');
     $data_de_registro = $currentdatetime->format("Y-m-d H:i:s" . ".000000");
 
 
-    $registred = $Controller->register($username, $password, $data_de_registro);
+    $registred = $Controller->register($username,$email, $password, $data_de_registro);
     $error_code = 0;
 
     if ($registred && $error_code == null) {
@@ -39,6 +40,7 @@ if (!empty($_POST)) {
         <div>
             <form method="POST" enctype="multipart/form-data">
                 <input required type="text" name="username" placeholder="nome de usuário">
+                <input required type="text" name="email" placeholder="email">
                 <input required type="password" name="password" placeholder="senha">
                 <button type="submit">Cadastrar Conta</button>
             </form>
