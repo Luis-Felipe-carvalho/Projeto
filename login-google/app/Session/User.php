@@ -24,8 +24,7 @@ return session_status() !== PHP_SESSION_ACTIVE ? session_start() : true;
         //Define a sessão do usuario
       $_SESSION['user'] = [
         'name' => $name,
-        'email' => $email,
-        'descricao' => d
+        'email' => $email
       ];
     }
     
@@ -63,9 +62,5 @@ return session_status() !== PHP_SESSION_ACTIVE ? session_start() : true;
       //remove a sessão do usuario
       unset($_SESSION['user']);
     }
-    public static function getdescription(){
-      self::init();
-
-      unset($_SESSION['descricao'])
-    }
+    
 }

@@ -91,6 +91,7 @@ $info = $User::getinfo();
                     <br>
                     <?= $info['email'] ?>
                     <br>
+                    info
                     <br>
 
                     <a href="logout.php">
