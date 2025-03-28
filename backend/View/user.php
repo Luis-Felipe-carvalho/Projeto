@@ -25,6 +25,7 @@ $username = $Controller->getUserFromID($_COOKIE['id_user'])["username"];
 
         <div method="POST">
             <h2>Nome de Usuário: <?=$username?></h2>
+            <h2>Email: <?=$email?></h2>
             <a href="logout.php"><button>Sair da conta</button></a>
             
         </div>
