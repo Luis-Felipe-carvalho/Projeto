@@ -8,7 +8,7 @@ class User{
      * Metodo responsavel por iniciar a sessão dentro da aplicação
      * @return boolean
      */
-    private static function init(){
+    public static function init(){
 return session_status() !== PHP_SESSION_ACTIVE ? session_start() : true;
     }
     

@@ -4,11 +4,12 @@
 require __DIR__ . '/vendor/autoload.php';
 
 //dependencias
+
+use App\Session\User;
 use Google\Client as GoogleClient;
-use \App\Session\User as SessionUser;
-
+require_once "C:/Turma2/xampp/htdocs/Projeto-de-vida/login-google/app/Session/User.php";
 //validação principal do cookie
-
+$User = new User();
 
 //Verifica os campos obrigatorios
 if (!isset($_POST['credential']) || !isset($_POST['g_csrf_token'])) {
@@ -27,6 +28,7 @@ if ($_POST['g_csrf_token'] != $cookie) {
 
 //Validação secudaria do token
 
+
 //Instancia do cliente google
 $client = new GoogleClient(['client_id' => '659345250941-hp6n6p2g45ogrgt0noqplur9tegi36vo.apps.googleusercontent.com']);
 
@@ -35,7 +37,7 @@ $payload = $client->verifyIdToken($_POST['credential']);
 
 //Verifica os dados do payload
 if (isset($payload['email'])) {
-  SessionUser::login($payload['name'], $payload['email']);
+  User::login($payload['name'], $payload['email']);
   header('location: index.php');
   exit;
 }

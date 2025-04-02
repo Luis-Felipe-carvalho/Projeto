@@ -102,6 +102,12 @@ $info = $User::getinfo();
         </section>
     </main>
 
+    <section>
+<?php
+
+?>
+    </section>
+
 </body>
 
 </html>

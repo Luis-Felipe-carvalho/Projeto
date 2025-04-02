@@ -66,12 +66,17 @@ ul {
     border-radius: 999px;
     font-weight: 500;
     transition: all 0.3s ease;
+ 
 }
 
 .btn-primary {
     background-color: var(--primary);
     color: white;
     box-shadow: 0 8px 16px rgba(0, 100, 250, 0.2);
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 .btn-primary:hover {
