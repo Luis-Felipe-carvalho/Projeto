@@ -21,19 +21,12 @@ $info = $User::getinfo();
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="styles.css">
 </head>
-
-<style>
-    img{
-        border-radius: 100px;
-    }
-</style>
-
 <body>
 
     <!-- Navigation -->
     <header id="navbar">
         <div class="container">
-            <a href="../../backend/View/index.php" class="logo">Projeto de <span>Vida</span></a>
+            <a href="..backend/index.php" class="logo">Projeto de <span>Vida</span></a>
             <nav>
                 <ul class="desktop-nav">
                     <li><a href="#Inicio">Início</a></li>

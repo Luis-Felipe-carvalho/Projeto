@@ -1,16 +1,43 @@
 <?php
-session_start();
-include_once '../Controller/UserController.php';
-include_once 'C:/Turma2/xampp/htdocs/Projeto-de-vida/config.php';
+// Verifica se a sessão já está ativa antes de iniciar
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// Caminho correto para UserController.php
+$controllerPath = __DIR__ . '/../Controller/UserController.php';
+
+if (file_exists($controllerPath)) {
+    require_once $controllerPath;
+} else {
+    die("Erro: Arquivo UserController.php não encontrado em $controllerPath");
+}
+
+// Caminho correto para o arquivo de configuração
+$configPath = __DIR__ . '/../../config.php';
+
+if (file_exists($configPath)) {
+    require_once $configPath;
+} else {
+    die("Erro: Arquivo config.php não encontrado em $configPath");
+}
+
+// Verifica se a classe foi carregada corretamente
+if (!class_exists('UserController')) {
+    die("Erro: Classe UserController não encontrada. Verifique se o arquivo foi incluído corretamente.");
+}
+
+// Instancia o controlador
 $Controller = new UserController($pdo);
 
+// Verifica se o usuário está autenticado
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
+    exit();
 }
-$username = $Controller->getUserFromID($_SESSION['user_id'])["username"];
 
 $user_id = $_SESSION['user_id'];
+$username = $Controller->getUserFromID($user_id)["username"];
 
 // Buscar dados do usuário
 $stmt = $pdo->prepare("SELECT username, email, description, profile_picture FROM users WHERE id = ?");
@@ -21,7 +48,7 @@ if (!$user) {
     die("Usuário não encontrado.");
 }
 
-
+// Atualizar descrição do usuário
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['description'])) {
     $new_description = $_POST['description'];
 
@@ -32,13 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['description'])) {
     exit();
 }
 
-//foto-perfil
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
+// Upload de foto de perfil
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) {
     $file = $_FILES["profile_picture"];
-    $uploadDir = __DIR__ . "\img\\"; // Caminho absoluto para a pasta
+    $uploadDir = __DIR__ . "/img/"; // Caminho absoluto para a pasta
 
     $allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    $fileType = mime_content_type($file["tmp_name"]); // Obtém o tipo do arquivo
+    $fileType = mime_content_type($file["tmp_name"]);
 
     if ($file["error"] === 0 && in_array($fileType, $allowedTypes)) {
         // Criar diretório se não existir
@@ -47,10 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
         }
 
         $fileName = uniqid() . "_" . basename($file["name"]);
-        $filePath = "img/" . $fileName; // Caminho relativo para salvar no banco
+        $filePath = "img/" . $fileName;
 
         if (move_uploaded_file($file["tmp_name"], $uploadDir . $fileName)) {
-            // Salva o caminho no banco
             $stmt = $pdo->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
             $stmt->execute([$filePath, $user_id]);
 
@@ -66,6 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
 ?>
+
 
 
 <!DOCTYPE html>
