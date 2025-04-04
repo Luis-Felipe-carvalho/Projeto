@@ -143,6 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
         header("Location: user.php?sucesso=1");
         exit;
     }
+}
 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
 ?>
