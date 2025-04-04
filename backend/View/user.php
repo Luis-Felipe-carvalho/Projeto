@@ -48,6 +48,9 @@ if (!$user) {
     die("Usuário não encontrado.");
 }
 
+// Definir auth_type com valor padrão para evitar erro de índice indefinido
+$authType = $_SESSION['auth_type'] ?? 'normal';
+
 // Atualizar descrição do usuário
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['description'])) {
     $new_description = $_POST['description'];
@@ -93,8 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -106,198 +107,28 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<style>
-    img {
-        border-radius: 100px;
-    }
-</style>
-
 <body>
 
-    <!-- Navigation -->
     <header id="navbar">
         <div class="container">
-            <a href="../../backend/View/index.php" class="logo">Projeto de <span>Vida</span></a>
+            <a href="index.php" class="logo">Projeto de <span>Vida</span></a>
             <nav>
                 <ul class="desktop-nav">
-                    <li><a href="index.php?#Inicio">Início</a></li>
-                    <li><a href="index.php?#Sobre">Sobre</a></li>
-                    <li><a href="index.php?#Educacao">Educação</a></li>
-                    <li><a href="index.php?#Carreira">Carreira</a></li>
-                    <li><a href="index.php?#Contato">Contato</a></li>
+                    <li><a href="index.php">Início</a></li>
+                    <li><a href="index.php">Sobre</a></li>
+                    <li><a href="index.php">Educação</a></li>
+                    <li><a href="index.php">Carreira</a></li>
+                    <li><a href="index.php">Contato</a></li>
                     <li><a href="user.php">Perfil</a></li>
                 </ul>
-
-                <button id="mobile-menu-btn" aria-label="Toggle menu">
-                    <span>
-                        <li><a href="index.php?#Inicio">Início</a></li>
-                    </span>
-                    <span>
-                        <li><a href="index.php?#Sobre">Sobre</a></li>
-                    </span>
-                    <span>
-                        <li><a href="index.php?#Educacao">Educação</a></li>
-                    </span>
-                    <span>
-                        <li><a href="index.php?#Carreira">Carreira</a></li>
-                    </span>
-                    <span>
-                        <li><a href="index.php?#Contato">Contato</a></li>
-                    </span>
-                    <span>
-                        <li><a href="index.php?Perfil.php">Perfil</a></li>
-                    </span>
-                </button>
             </nav>
-        </div>
-
-        <!-- Mobile Navigation -->
-        <div id="mobile-menu">
-            <ul>
-                <li><a href="index.php?#Inicio">Início</a></li>
-                <li><a href="index.php?#Sobre">Sobre</a></li>
-                <li><a href="index.php?#Educacao">Educação</a></li>
-                <li><a href="index.php?#Carreira">Carreira</a></li>
-                <li><a href="index.php?#Contato">Contato</a></li>
-                <li><a href="index.php?Perfil.php">Perfil</a></li>
-            </ul>
         </div>
     </header>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <style>
-        /* Contêiner principal */
-        .profile-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Foto de perfil */
-        .profile-pic-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #bfdbfe;
-        }
-
-        .profile-pic-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Botão de upload sobreposto */
-        .upload-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .profile-pic-container:hover .upload-overlay {
-            opacity: 1;
-        }
-
-        .upload-overlay label {
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-            background: #00000080;
-            padding: 8px 12px;
-            border-radius: 5px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        /* Informações do usuário */
-        .user-info {
-            margin-top: 20px;
-        }
-
-        .user-info h2 {
-            font-size: 18px;
-            margin: 5px 0;
-            color: #333;
-        }
-
-        /* Área de descrição */
-        textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        /* Botões */
-        button {
-            background: #3b82f6;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
-
-        /* Botão de logout */
-        .logout-button {
-            background: #dc2626;
-            margin-top: 10px;
-        }
-
-        .logout-button:hover {
-            background: #b91c1c;
-        }
-    </style>
-
-
     <section class="profile-container">
-    <div class="profile-pic-container">
+        <div class="profile-pic-container">
             <img src="<?= htmlspecialchars($profilePicture) ?>" alt="Foto de Perfil">
 
-            <!-- Overlay para upload -->
             <div class="upload-overlay">
                 <label for="profile_picture">Alterar Foto</label>
             </div>
@@ -310,24 +141,62 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
 
         <!-- Informações do usuário -->
         <div class="user-info">
-            <h2>Nome de Usuário: <?= htmlspecialchars($username) ?></h2>
-            <h2>Email: <?= htmlspecialchars($_SESSION['email']) ?></h2>
+            <?php if ($authType === 'normal'): ?>
+                <?php
+                if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_usuario'])) {
+                    $new_name = trim($_POST['nome']);
+                    $new_email = trim($_POST['email']);
+
+                    if (!empty($new_nome) && !empty($new_email)) {
+                        $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ? WHERE id = ?");
+                        if ($stmt->execute([$new_nome, $new_email, $user['id']])) {
+                            $username = $new_nome;
+                            $user['email'] = $new_email;
+                            echo "<p style='color: green;'>Dados atualizados com sucesso.</p>";
+                        } else {
+                            echo "<p style='color: red;'>Erro ao atualizar dados.</p>";
+                        }
+                    } else {
+                        echo "<p style='color: red;'>Preencha todos os campos.</p>";
+                    }
+                }
+                ?>
+
+                <form method="POST">
+                    <h2>Nome de Usuário:</h2>
+                    <input type="text" name="nome" value="<?= htmlspecialchars($username) ?>">
+
+                    <h2>Email:</h2>
+                    <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+
+                    <button type="submit" name="edit_usuario" class="btn">Salvar Alterações</button>
+                </form>
+
+            <?php elseif ($authType === 'google' && isset($info)): ?>
+                <h2>Nome de Usuário: <?= htmlspecialchars($info['name'] ?? 'Nome não disponível') ?></h2>
+                <h2>Email: <?= htmlspecialchars($info['email'] ?? 'Email não disponível') ?></h2>
+            <?php else: ?>
+                <h2>Nome de Usuário: Não disponível</h2>
+                <h2>Email: Não disponível</h2>
+            <?php endif; ?>
+
             <a href="logout.php"><button class="logout-button">Sair da conta</button></a>
         </div>
 
         <!-- Descrição -->
         <h3>Descrição:</h3>
         <form method="POST">
-            <textarea name="description" rows="5"><?= htmlspecialchars($user['description']) ?></textarea>
+            <textarea name="description" rows="5"><?= htmlspecialchars($user['description'] ?? '') ?></textarea>
             <button type="submit">Salvar</button>
         </form>
     </section>
 
     <script>
-    document.getElementById("profile_picture").addEventListener("change", function() {
-        document.getElementById("uploadForm").submit();
-    });
-</script>
+        document.getElementById("profile_picture").addEventListener("change", function() {
+            document.getElementById("uploadForm").submit();
+        });
+    </script>
+
 </body>
 
 </html>

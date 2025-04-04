@@ -1,23 +1,26 @@
 <?php
 session_start();
-include_once 'C:/Turma2/xampp/htdocs/Projeto-de-vida/backend/Controller/UserController.php';
-include_once 'C:/Turma2/xampp/htdocs/Projeto-de-vida/config.php';
+require_once __DIR__ . '/../../config.php'; // Caminho correto para o config.php
 
-$Controller = new UserController($pdo);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    
+    // Buscar usuário no banco de dados
+    $stmt = $pdo->prepare("SELECT id, password FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!empty($_POST)) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $email = $_POST['email'];
+    if ($user && password_verify($password, $user['password'])) {
+        // Login bem-sucedido - iniciar sessão
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['email'] = $email;
 
-    $logged_in = $Controller->login($username, $email, $password);
-
-    if (!empty($logged_in)) {
-        $_SESSION['user_id'] = $logged_in['id'];
-        $_SESSION['email'] = $logged_in['email'];
-
-        header("Location: user.php");
-        exit; // Garante que o script não continue rodando após o redirecionamento
+        echo "<p>Login realizado com sucesso! Redirecionando...</p>";
+        header("refresh:2; url=user.php"); // Redireciona após 2 segundos
+        exit;
+    } else {
+        echo "<p style='color: red;'>E-mail ou senha incorretos.</p>";
     }
 }
 ?>
@@ -104,13 +107,18 @@ if (!empty($_POST)) {
                     <br>
                     <input required="@gmail.com" type="text" name="email" placeholder="email">
                     <br>
+                   
 
                     <?php
                     if (isset($logged_in) && empty($logged_in)) {
                         echo "usuário ou senha estão errados, tente novamente!";
-                    } else {
+                        
                     }
+
                     ?>
+                    <button><a href='Esqueci_senha.php'>Esqueci minha senha!</a></button>
+                    <br>
+                    <br>
                     <div class="login_google">
                         <button class="btn btn-primary" type="submit">Login</button>
                         <h3>ou</h3>

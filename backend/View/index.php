@@ -1,7 +1,28 @@
 <?php
-session_start(); // Inicia a sessão, se ainda não estiver iniciada
+session_start();
+require_once __DIR__ . '/../../config.php'; // Caminho correto para o config.php
 
-$logged_in = isset($_SESSION["id_user"]); // Verifica se há um usuário logado
+$logged_in = isset($_SESSION["user_id"]); // Verifica se há um usuário logado
+
+$feedback_msg = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $mensagem = trim($_POST['mensagem']);
+    $Assunto = trim($_POST['Assunto']);
+
+    if (!empty($nome) && !empty($email) && !empty($mensagem) && !empty($Assunto)) {
+        $stmt = $pdo->prepare("INSERT INTO feedback (nome, email, mensagem, Assunto) VALUES (?, ?, ?, ?)");
+        if ($stmt->execute([$nome, $email, $mensagem, $Assunto])) {
+            $feedback_msg = "<p style='color: green;'>Feedback enviado com sucesso!</p>";
+        } else {
+            $feedback_msg = "<p style='color: red;'>Erro ao enviar feedback.</p>";
+        }
+    } else {
+        $feedback_msg = "<p style='color: red;'>Todos os campos são obrigatórios.</p>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,14 +43,19 @@ $logged_in = isset($_SESSION["id_user"]); // Verifica se há um usuário logado
             <a href="index.php" class="logo">Projeto de <span>Vida</span></a>
             <nav>
                 <ul class="desktop-nav">
-                    <li><a href="index.php?#Inicio">Início</a></li>
-                    <li><a href="index.php?#Sobre">Sobre</a></li>
-                    <li><a href="index.php?#Educacao">Educação</a></li>
-                    <li><a href="index.php?#Carreira">Carreira</a></li>
-                    <li><a href="index.php?#Contato">Contato</a></li>
                     <?php if ($logged_in): ?>
+                        <li><a href="index.php?#Inicio">Início</a></li>
+                        <li><a href="index.php?#Sobre">Sobre</a></li>
+                        <li><a href="index.php?#Educacao">Educação</a></li>
+                        <li><a href="index.php?#Carreira">Carreira</a></li>
+                        <li><a href="index.php?#Contato">Contato</a></li>
                         <li><a href="user.php">Perfil</a></li>
                     <?php else: ?>
+                        <li><a href="index.php?#Inicio">Início</a></li>
+                        <li><a href="index.php?#Sobre">Sobre</a></li>
+                        <li><a href="index.php?#Educacao">Educação</a></li>
+                        <li><a href="index.php?#Carreira">Carreira</a></li>
+                        <li><a href="index.php?#Contato">Contato</a></li>
                         <li><a href="login.php">Login</a></li>
                     <?php endif; ?>
                 </ul>
@@ -303,56 +329,59 @@ $logged_in = isset($_SESSION["id_user"]); // Verifica se há um usuário logado
                 </p>
             </div>
 
-            <div class="Contato-container">
-                <div class="Contato-form">
-                    <h3>Me mande uma Mensagem</h3>
-                    <form id="ContatoForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="Nome">Nome</label>
-                                <input type="text" id="Nome" placeholder="Seu Nome">
+            <section id="Feedback" class="section">
+                <div class="Contato-container">
+                    <div class="Contato-form">
+                        <h3>Me mande uma Mensagem</h3>
+                        <?php if (isset($feedback_msg)) echo $feedback_msg; ?>
+                        <form method="POST" id="ContatoForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="nome">Nome:</label>
+                                    <input type="text" id="nome" name="nome" placeholder="Seu nome:" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">E-mail:</label>
+                                    <input type="email" id="email" name="email" placeholder="Seu email" required>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" id="email" placeholder="Seu email">
+                                <label for="Assunto">Assunto</label>
+                                <input type="text" id="Assunto" name="Assunto" placeholder="Assunto">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="Assunto">Assunto</label>
-                            <input type="text" id="Assunto" placeholder="Assunto">
-                        </div>
-                        <div class="form-group">
-                            <label for="Mensagem">Mensagem</label>
-                            <textarea id="Mensagem" rows="5" placeholder="Sua mensagem"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Enviar mensagem</button>
-                    </form>
+                            <div class="form-group">
+                                <label for="mensagem">Mensagem</label>
+                                <textarea id="mensagem" name="mensagem" rows="5" placeholder="Sua mensagem" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar mensagem</button>
+                        </form>
+                    </div>
                 </div>
-
-                <div class="Contato-info">
-                    <h3>Informações de contato</h3>
-                    <div class="info-item">
-                        <div class="icon-mail"></div>
-                        <div>
-                            <h4>Email</h4>
-                            <p>eric.palma@portalsesisp.org.br</p>
-                        </div>
+            </section>
+            <div class="Contato-info">
+                <h3>Informações de contato</h3>
+                <div class="info-item">
+                    <div class="icon-mail"></div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>eric.palma@portalsesisp.org.br</p>
                     </div>
-                    <div class="info-item">
-                        <div class="icon-map-pin"></div>
-                        <div>
-                            <h4>
-                                Localização</h4>
-                            <p>SESI 380 Centro Educacional de Paraguaçu Paulista</p>
-                        </div>
+                </div>
+                <div class="info-item">
+                    <div class="icon-map-pin"></div>
+                    <div>
+                        <h4>
+                            Localização</h4>
+                        <p>SESI 380 Centro Educacional de Paraguaçu Paulista</p>
                     </div>
-                    <div class="social-links">
-                        <a href="https://github.com/Eric-codecrypt" class="social-icon github"></a>
-                        <a href="#" class="social-icon linkedin"></a>
-                        <a href="#" class="social-icon twitter"></a>
-                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="https://github.com/Eric-codecrypt" class="social-icon github"></a>
+                    <a href="#" class="social-icon linkedin"></a>
+                    <a href="#" class="social-icon twitter"></a>
                 </div>
             </div>
+        </div>
         </div>
     </section>
 

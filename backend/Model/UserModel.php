@@ -45,4 +45,5 @@ class UserModel
         $stmt = $stmt->fetch(PDO::FETCH_ASSOC);
         return $stmt;
     }
+    
 }

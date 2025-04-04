@@ -6,7 +6,7 @@ $Controller = new UserController($pdo);
 
 if (!empty($_POST)) {
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $email = $_POST['email'];
     $currentdatetime = new DateTime('now');
     $data_de_registro = $currentdatetime->format("Y-m-d H:i:s" . ".000000");
@@ -40,7 +40,7 @@ if (!empty($_POST)) {
         <div>
             <form method="POST" enctype="multipart/form-data">
                 <input required type="text" name="username" placeholder="nome de usuário">
-                <input required type="text" name="email" placeholder="email">
+                <input required type="email" name="email" placeholder="email">
                 <input required type="password" name="password" placeholder="senha">
                 <button type="submit">Cadastrar Conta</button>
             </form>

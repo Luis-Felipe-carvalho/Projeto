@@ -1,23 +1,27 @@
 <?php
-
-// Autoload de classes do Composer
+// Autoload do Composer
 require __DIR__ . '/vendor/autoload.php';
 
-// Importa a classe User.php corretamente
-require_once __DIR__ . '/../app/Session/User.php';
 
 // Dependências
-use App\Session\User as SessionUser;
+use App\Session\User;
 
-// Caminho correto para incluir user.php ou login.php
-$includePath = SessionUser::isLogged() ? 
-    __DIR__ . '/user.php' : // Volta um nível para encontrar user.php
-    __DIR__ . '/login.php'; // Login já está na mesma pasta
+// Usar o caminho absoluto baseado no diretório raiz do servidor
+require_once "C:/Turma2/xampp/htdocs/Projeto-de-vida/login-google/app/Session/User.php"; // Caminho absoluto
+
+
+$User = new User();
+// Retorna as informações da sessão do usuário
+$info = $User->getinfo();
+
+// Verifica se o usuário está logado e define o caminho correto
+$includePath = User::isLogged() ? 
+    __DIR__ . '/../../backend/View/user.php' : // Caminho correto para user.php
+    __DIR__ . '/login.php'; // Login continua na mesma pasta
 
 if (file_exists($includePath)) {
     include $includePath;
 } else {
     die("Erro: Arquivo não encontrado -> $includePath");
 }
-
-
+?>
