@@ -44,22 +44,54 @@ $stmt = $pdo->prepare("SELECT username, email, description, profile_picture FROM
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user) {
-    die("Usuário não encontrado.");
+$user_id = $_SESSION['user_id'] ?? null;
+if (!$user_id) {
+    die("Usuário não autenticado.");
 }
 
-// Definir auth_type com valor padrão para evitar erro de índice indefinido
-$authType = $_SESSION['auth_type'] ?? 'normal';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_perfil_completo'])) {
+    $fale = $_POST['fale_sobre_voce'] ?? '';
+    $lembrancas = $_POST['minhas_lembrancas'] ?? '';
+    $p_fortes = $_POST['pontos_fortes'] ?? '';
+    $p_fracos = $_POST['pontos_fracos'] ?? '';
+    $valores = $_POST['meus_valores'] ?? '';
+    $aptidoes = implode(', ', $_POST['aptidoes'] ?? []);
+    $rel_familia = $_POST['relacoes_familia'] ?? '';
+    $rel_amigos = $_POST['relacoes_amigos'] ?? '';
+    $rel_escola = $_POST['relacoes_escola'] ?? '';
+    $rel_sociedade = $_POST['relacoes_sociedade'] ?? '';
+    $gosto = $_POST['gosto_fazer'] ?? '';
+    $nao_gosto = $_POST['nao_gosto_fazer'] ?? '';
+    $rotina = $_POST['rotina'] ?? '';
+    $lazer = $_POST['lazer'] ?? '';
+    $estudos = $_POST['estudos'] ?? '';
+    $vida_escolar = $_POST['vida_escolar'] ?? '';
+    $visao_fisica = $_POST['visao_fisica'] ?? '';
+    $visao_intelectual = $_POST['visao_intelectual'] ?? '';
+    $visao_emocional = $_POST['visao_emocional'] ?? '';
+    $visao_amigos = $_POST['visao_dos_amigos'] ?? '';
+    $visao_familiares = $_POST['visao_dos_familiares'] ?? '';
+    $visao_professores = $_POST['visao_dos_professores'] ?? '';
+    $auto_total = (int) ($_POST['autovalorizacao_total'] ?? 0);
 
-// Atualizar descrição do usuário
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['description'])) {
-    $new_description = $_POST['description'];
+    $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (
+        user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores,
+        principais_aptidoes, relacoes_familia, relacoes_amigos, relacoes_escola, relacoes_sociedade,
+        gosto_fazer, nao_gosto_fazer, rotina, lazer, estudos, vida_escolar,
+        visao_fisica, visao_intelectual, visao_emocional,
+        visao_dos_amigos, visao_dos_familiares, visao_dos_professores, autovalorizacao_total
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    $stmt = $pdo->prepare("UPDATE users SET description = ? WHERE id = ?");
-    $stmt->execute([$new_description, $user_id]);
+    $stmt->execute([
+        $user_id, $fale, $lembrancas, $p_fortes, $p_fracos, $valores,
+        $aptidoes, $rel_familia, $rel_amigos, $rel_escola, $rel_sociedade,
+        $gosto, $nao_gosto, $rotina, $lazer, $estudos, $vida_escolar,
+        $visao_fisica, $visao_intelectual, $visao_emocional,
+        $visao_amigos, $visao_familiares, $visao_professores, $auto_total
+    ]);
 
-    header("Location: user.php");
-    exit();
+    header("Location: user.php?sucesso=1");
+    exit;
 }
 
 // Upload de foto de perfil
@@ -92,10 +124,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
 
-    $user_id = $_SESSION['user_id'] ?? null;
 
-    if (!$user_id) {
-        die("Usuário não autenticado.");
+
+    if ($user_id === $logged_in) {
+        die("Usuário autenticado.");
     }
 
     $fale = $_POST['fale_sobre_voce'] ?? '';
@@ -105,7 +137,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     $valores = $_POST['meus_valores'] ?? '';
     $aptidoes = implode(', ', $_POST['aptidoes'] ?? []);
 
-    // Outros campos seguem...
 
     $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores, principais_aptidoes) 
 VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -215,101 +246,60 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
 
         <!-- Formulário "Quem Sou Eu?" -->
         <h3>Quem Sou Eu?</h3>
-        <form method="POST" action="user.php">
-            <!-- Fale sobre você -->
-            <label for="sobre_voce">Fale sobre você:</label>
-            <textarea name="sobre_voce" rows="4"><?= htmlspecialchars($user['sobre_voce'] ?? '') ?></textarea>
+        <form method="POST">
+    <h3>Fale sobre você</h3>
+    <textarea name="fale_sobre_voce" rows="4"></textarea>
 
-            <!-- Minhas Lembranças -->
-            <label for="lembrancas">Minhas Lembranças:</label>
-            <textarea name="lembrancas" rows="4"><?= htmlspecialchars($user['lembrancas'] ?? '') ?></textarea>
+    <h3>Minhas Lembranças</h3>
+    <textarea name="minhas_lembrancas" rows="4"></textarea>
 
-            <!-- Pontos Fortes e Fracos -->
-            <label for="pontos_fortes">Pontos Fortes:</label>
-            <input type="text" name="pontos_fortes" value="<?= htmlspecialchars($user['pontos_fortes'] ?? '') ?>">
+    <h3>Pontos Fortes</h3>
+    <input type="text" name="pontos_fortes">
 
-            <label for="pontos_fracos">Pontos Fracos:</label>
-            <input type="text" name="pontos_fracos" value="<?= htmlspecialchars($user['pontos_fracos'] ?? '') ?>">
+    <h3>Pontos Fracos</h3>
+    <input type="text" name="pontos_fracos">
 
-            <!-- Meus Valores -->
-            <label for="valores">Meus Valores (separar por vírgula):</label>
-            <input type="text" name="valores" value="<?= htmlspecialchars($user['valores'] ?? '') ?>">
+    <h3>Meus Valores</h3>
+    <input type="text" name="meus_valores">
 
-            <!-- Aptidões -->
-            <label>Minhas Principais Aptidões:</label><br>
-            <?php
-            $aptidoes = ['Liderança', 'Empatia', 'Organização', 'Criatividade', 'Comunicação'];
-            foreach ($aptidoes as $apt) {
-                $checked = (isset($user['aptidoes']) && in_array($apt, explode(',', $user['aptidoes']))) ? 'checked' : '';
-                echo "<label><input type='checkbox' name='aptidoes[]' value='$apt' $checked> $apt</label><br>";
-            }
-            ?>
+    <h3>Minhas Principais Aptidões</h3>
+    <label><input type="checkbox" name="aptidoes[]" value="Comunicativo"> Comunicativo</label>
+    <label><input type="checkbox" name="aptidoes[]" value="Criativo"> Criativo</label>
+    <label><input type="checkbox" name="aptidoes[]" value="Organizado"> Organizado</label>
 
-            <!-- Relacionamentos -->
-            <label for="familia">Família:</label>
-            <input type="text" name="familia" value="<?= htmlspecialchars($user['familia'] ?? '') ?>">
+    <h3>Meus Relacionamentos</h3>
+    <label>Família</label><input type="text" name="relacoes_familia">
+    <label>Amigos</label><input type="text" name="relacoes_amigos">
+    <label>Escola</label><input type="text" name="relacoes_escola">
+    <label>Sociedade</label><input type="text" name="relacoes_sociedade">
 
-            <label for="amigos">Amigos:</label>
-            <input type="text" name="amigos" value="<?= htmlspecialchars($user['amigos'] ?? '') ?>">
+    <h3>Meu Dia a Dia</h3>
+    <label>O que gosto de fazer</label><input type="text" name="gosto_fazer">
+    <label>O que não gosto</label><input type="text" name="nao_gosto_fazer">
+    <label>Rotina</label><input type="text" name="rotina">
+    <label>Lazer</label><input type="text" name="lazer">
+    <label>Estudos</label><input type="text" name="estudos">
 
-            <label for="escola">Escola:</label>
-            <input type="text" name="escola" value="<?= htmlspecialchars($user['escola'] ?? '') ?>">
+    <h3>Minha Vida Escolar</h3>
+    <textarea name="vida_escolar" rows="3"></textarea>
 
-            <label for="sociedade">Sociedade:</label>
-            <input type="text" name="sociedade" value="<?= htmlspecialchars($user['sociedade'] ?? '') ?>">
+    <h3>Minha Visão Sobre Mim</h3>
+    <label>Física</label><input type="text" name="visao_fisica">
+    <label>Intelectual</label><input type="text" name="visao_intelectual">
+    <label>Emocional</label><input type="text" name="visao_emocional">
 
-            <!-- Meu Dia a Dia -->
-            <label for="gosto_fazer">O que gosto de fazer:</label>
-            <input type="text" name="gosto_fazer" value="<?= htmlspecialchars($user['gosto_fazer'] ?? '') ?>">
+    <h3>A Visão das Pessoas Sobre Mim</h3>
+    <label>Amigos</label><input type="text" name="visao_dos_amigos">
+    <label>Familiares</label><input type="text" name="visao_dos_familiares">
+    <label>Professores</label><input type="text" name="visao_dos_professores">
 
-            <label for="nao_gosto">O que não gosto:</label>
-            <input type="text" name="nao_gosto" value="<?= htmlspecialchars($user['nao_gosto'] ?? '') ?>">
+    <h3>Autovalorização</h3>
+    <label>Total (preenchido automaticamente por JS ou manualmente)</label>
+    <input type="number" name="autovalorizacao_total" min="0" max="100">
 
-            <label for="rotina">Rotina:</label>
-            <input type="text" name="rotina" value="<?= htmlspecialchars($user['rotina'] ?? '') ?>">
-
-            <label for="lazer">Lazer:</label>
-            <input type="text" name="lazer" value="<?= htmlspecialchars($user['lazer'] ?? '') ?>">
-
-            <label for="estudos">Estudos:</label>
-            <input type="text" name="estudos" value="<?= htmlspecialchars($user['estudos'] ?? '') ?>">
-
-            <!-- Vida Escolar -->
-            <label for="vida_escolar">Minha Vida Escolar:</label>
-            <textarea name="vida_escolar" rows="3"><?= htmlspecialchars($user['vida_escolar'] ?? '') ?></textarea>
-
-            <!-- Minha Visão Sobre Mim -->
-            <label for="visao_fisica">Visão Física:</label>
-            <input type="text" name="visao_fisica" value="<?= htmlspecialchars($user['visao_fisica'] ?? '') ?>">
-
-            <label for="visao_intelectual">Visão Intelectual:</label>
-            <input type="text" name="visao_intelectual" value="<?= htmlspecialchars($user['visao_intelectual'] ?? '') ?>">
-
-            <label for="visao_emocional">Visão Emocional:</label>
-            <input type="text" name="visao_emocional" value="<?= htmlspecialchars($user['visao_emocional'] ?? '') ?>">
-
-            <!-- Visão das Pessoas Sobre Mim -->
-            <label for="visao_amigos">O que meus amigos dizem:</label>
-            <input type="text" name="visao_amigos" value="<?= htmlspecialchars($user['visao_amigos'] ?? '') ?>">
-
-            <label for="visao_familiares">O que minha família diz:</label>
-            <input type="text" name="visao_familiares" value="<?= htmlspecialchars($user['visao_familiares'] ?? '') ?>">
-
-            <label for="visao_professores">O que meus professores dizem:</label>
-            <input type="text" name="visao_professores" value="<?= htmlspecialchars($user['visao_professores'] ?? '') ?>">
-
-            <!-- Autovalorização (exemplo simplificado) -->
-            <label for="autovalorizacao">Como você se sente sobre você mesmo(a)?</label>
-            <select name="autovalorizacao">
-                <option value="1" <?= ($user['autovalorizacao'] ?? '') == '1' ? 'selected' : '' ?>>1 - Muito Ruim</option>
-                <option value="2" <?= ($user['autovalorizacao'] ?? '') == '2' ? 'selected' : '' ?>>2</option>
-                <option value="3" <?= ($user['autovalorizacao'] ?? '') == '3' ? 'selected' : '' ?>>3 - Regular</option>
-                <option value="4" <?= ($user['autovalorizacao'] ?? '') == '4' ? 'selected' : '' ?>>4</option>
-                <option value="5" <?= ($user['autovalorizacao'] ?? '') == '5' ? 'selected' : '' ?>>5 - Excelente</option>
-            </select>
-
-            <button type="submit">Salvar Formulário</button>
-        </form>
+    <br><br>
+    <button type="submit" name="salvar_perfil_completo">Salvar Tudo</button>
+</form>
 
     </section>
 
