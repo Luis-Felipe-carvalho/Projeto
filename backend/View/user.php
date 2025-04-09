@@ -256,7 +256,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                     $new_email = trim($_POST['email']);
 
                     if (!empty($new_name) && !empty($new_email)) {
-                        $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
+                        $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
                         if ($stmt->execute([$new_name, $new_email, $user['id']])) {
                             $username = $new_name;
                             $user['email'] = $new_email;
@@ -293,7 +293,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
         <h3>Descrição:</h3>
         <form method="POST">
             <textarea name="description" rows="5"><?= htmlspecialchars($user['description'] ?? '') ?></textarea>
-            <button type="submit">Salvar</button>
+            <button class="form-group" type="submit">Salvar</button>
         </form>
         <style>
             .form-grid {
@@ -304,7 +304,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
 
             .question {
                 width: 100%;
-                max-width: 700px;
+                max-width: 650px;
                 display: none;
                 animation: fadeIn 0.4s ease-in-out;
                 margin-bottom: 20px;
@@ -330,6 +330,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                 }
             }
 
+
             .resultado {
                 background: #e7f3ff;
                 border: 1px solid #b3d7ff;
@@ -339,15 +340,24 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                 display: none;
             }
         </style>
-
+        <br>
+        <br>
+        <hr>
+        <br>
+        <br>
         <!-- Formulário "Quem Sou Eu?" -->
         <h3>Formulário "Quem Sou Eu"</h3>
-        <button class="btn" id="startForm">Começar Formulário</button>
         <?php if (!empty($perfil)): ?>
+            <button class="btn" id="startForm">Refazer Formulário</button>
             <button class="btn" id="mostrarResultados">Exibir resultados do formulário</button>
+        <?php else: ?>
+            <button class="btn" id="startForm">Começar Formulário</button>
         <?php endif; ?>
 
+
         <form class="form-grid" method="post" id="formularioQuemSouEu">
+
+
             <?php
             $perguntas = [
                 'sobre_voce' => 'Fale sobre você:',
@@ -387,7 +397,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
             }
             ?>
             <div class="question" id="final">
-                <label for="autovalorizacao">Autovalorização total:</label>
+                <label for="autovalorizacao">Autovalorização total(0-100):</label>
                 <input type="number" name="autovalorizacao" min="0" max="100" value="<?= htmlspecialchars($perfil['autovalorizacao_total'] ?? 0) ?>">
                 <button type="submit" name="salvar_perfil_completo" class="btn">Salvar Perfil</button>
             </div>
@@ -398,6 +408,12 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
             <?php
             if (!empty($perfil)) {
                 foreach ($perfil as $chave => $valor) {
+                    if ($chave === 'id' || $chave === 'user_id') {
+                        if ($chave === 'user_id') {
+                            echo "<p><strong>Nome do Usuário:</strong> " . htmlspecialchars($username) . "</p>";
+                        }
+                        continue;
+                    }
                     echo "<p><strong>" . ucfirst(str_replace('_', ' ', $chave)) . ":</strong> " . nl2br(htmlspecialchars($valor)) . "</p>";
                 }
             } else {
@@ -409,60 +425,76 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
 
     <!-- "alterar foto" -->
     <script>
-        const perguntas = document.querySelectorAll('.question');
-        const botaoIniciar = document.getElementById('startForm');
-        const botaoMostrarResultados = document.getElementById('mostrarResultados');
-        const resultado = document.getElementById('resultadoPerfil');
+        document.addEventListener("DOMContentLoaded", function() {
+            const perguntas = document.querySelectorAll('.question');
+            const botaoIniciar = document.getElementById('startForm');
+            const botaoMostrarResultados = document.getElementById('mostrarResultados');
+            const resultado = document.getElementById('resultadoPerfil');
 
-        let indice = 0;
+            let indice = 0;
 
-        function mostrarPergunta(index) {
-            perguntas.forEach((p, i) => {
-                p.classList.remove('active');
-                if (i === index) {
-                    p.classList.add('active');
-                }
-            });
-        }
-
-        function proximo() {
-            if (indice < perguntas.length - 1) {
-                indice++;
-                mostrarPergunta(indice);
-            }
-        }
-
-        botaoIniciar.addEventListener('click', () => {
-            botaoIniciar.style.display = 'none';
-            mostrarPergunta(indice);
-        });
-
-        botaoMostrarResultados.addEventListener('click', () => {
-            resultado.style.display = 'block';
-            window.scrollTo({
-                top: resultado.offsetTop,
-                behavior: 'smooth'
-            });
-        });
-
-        perguntas.forEach((p) => {
-            const input = p.querySelector('textarea, input');
-            if (input) {
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        proximo();
+            function mostrarPergunta(index) {
+                perguntas.forEach((p, i) => {
+                    p.classList.remove('active');
+                    if (i === index) {
+                        p.classList.add('active');
                     }
                 });
-
-                const btnProximo = document.createElement('button');
-                btnProximo.textContent = 'Próxima';
-                btnProximo.type = 'button';
-                btnProximo.className = 'btn';
-                btnProximo.style.marginTop = '10px';
-                btnProximo.addEventListener('click', proximo);
-                p.appendChild(btnProximo);
             }
+
+            function proximo() {
+                if (indice < perguntas.length - 1) {
+                    indice++;
+                    mostrarPergunta(indice);
+                } else {
+                    mostrarPergunta(indice);
+                }
+            }
+
+            botaoIniciar.addEventListener('click', () => {
+                botaoIniciar.style.display = 'none';
+                mostrarPergunta(indice);
+            });
+
+            if (botaoMostrarResultados) {
+                botaoMostrarResultados.addEventListener('click', function() {
+                    // Toggle de exibição
+                    if (resultado.style.display === "none" || resultado.style.display === "") {
+                        resultado.style.display = "block";
+                        this.textContent = "Ocultar resultados do formulário";
+                        window.scrollTo({
+                            top: resultado.offsetTop,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        resultado.style.display = "none";
+                        this.textContent = "Exibir resultados do formulário";
+                    }
+                });
+            }
+
+            perguntas.forEach((p) => {
+                if (p.id !== 'final') {
+                    const btnProximo = document.createElement('button');
+                    btnProximo.textContent = 'Próxima';
+                    btnProximo.type = 'button';
+                    btnProximo.className = 'btn';
+                    btnProximo.style.marginTop = '10px';
+                    btnProximo.addEventListener('click', proximo);
+                    p.appendChild(btnProximo);
+                }
+
+                const input = p.querySelector('textarea, input');
+                if (input) {
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            proximo();
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 
