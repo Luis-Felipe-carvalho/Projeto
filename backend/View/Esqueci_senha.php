@@ -26,6 +26,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 ?>
 
+<style>
+    .features {
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        width: 340px;
+       
+    }
+
+    input {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 auto;
+        width: 30vh;
+        height: 5vh;
+        font-size: 20px;
+        padding: 10px;
+
+    }
+
+
+
+
+    h2{
+        display: flex;
+        justify-content: center;
+        margin-top:10px;
+    }
+   
+    
+    
+</style>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -37,15 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
-    <h2>Alterar Senha</h2>
-    <form method="POST">
+    
+    <form class="features" method="POST">
+        <div class="feature-card">
+        <h2>Alterar Senha</h2>
+        <br>
+        <br>
+        <br>
         <label for="email">E-mail cadastrado:</label>
+        <br>
         <input type="email" id="email" name="email" required>
-
+<br>
         <label for="new_password">Nova Senha:</label>
+        <br>
         <input type="password" id="new_password" name="new_password" required>
-
-        <button type="submit">Alterar Senha</button>
+<br>
+        <button class="btn btn-primary" type="submit">Alterar Senha</button>
+    </div>
     </form>
 </body>
 
