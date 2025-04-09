@@ -1,36 +1,28 @@
 <?php
-// Verifica se a sessão já está ativa antes de iniciar
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Caminho correto para UserController.php
 $controllerPath = __DIR__ . '/../Controller/UserController.php';
-
 if (file_exists($controllerPath)) {
     require_once $controllerPath;
 } else {
     die("Erro: Arquivo UserController.php não encontrado em $controllerPath");
 }
 
-// Caminho correto para o arquivo de configuração
 $configPath = __DIR__ . '/../../config.php';
-
 if (file_exists($configPath)) {
     require_once $configPath;
 } else {
     die("Erro: Arquivo config.php não encontrado em $configPath");
 }
 
-// Verifica se a classe foi carregada corretamente
 if (!class_exists('UserController')) {
-    die("Erro: Classe UserController não encontrada. Verifique se o arquivo foi incluído corretamente.");
+    die("Erro: Classe UserController não encontrada.");
 }
 
-// Instancia o controlador
 $Controller = new UserController($pdo);
 
-// Verifica se o usuário está autenticado
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
@@ -39,8 +31,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $username = $Controller->getUserFromID($user_id)["username"];
 
-// Buscar dados do usuário
-$stmt = $pdo->prepare("SELECT username, email, description, profile_picture FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -48,30 +39,83 @@ if (!$user) {
     die("Usuário não encontrado.");
 }
 
-// Definir auth_type com valor padrão para evitar erro de índice indefinido
 $authType = $_SESSION['auth_type'] ?? 'normal';
 
-// Atualizar descrição do usuário
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['description'])) {
-    $new_description = $_POST['description'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (isset($_POST['description'])) {
+        $new_description = $_POST['description'];
+        $stmt = $pdo->prepare("UPDATE users SET description = ? WHERE id = ?");
+        $stmt->execute([$new_description, $user_id]);
+        header("Location: user.php");
+        exit();
+    }
 
-    $stmt = $pdo->prepare("UPDATE users SET description = ? WHERE id = ?");
-    $stmt->execute([$new_description, $user_id]);
+    if (isset($_POST['edit_usuario'])) {
+        $new_nome = trim($_POST['nome']);
+        $new_email = trim($_POST['email']);
 
-    header("Location: user.php");
-    exit();
+        if (!empty($new_nome) && !empty($new_email)) {
+            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
+            $stmt->execute([$new_nome, $new_email, $user_id]);
+            $username = $new_nome;
+            $user['email'] = $new_email;
+        }
+    }
+
+    if (isset($_POST['salvar_perfil_completo'])) {
+        $fale = $_POST['sobre_voce'] ?? '';
+        $lembrancas = $_POST['lembrancas'] ?? '';
+        $p_fortes = $_POST['pontos_fortes'] ?? '';
+        $p_fracos = $_POST['pontos_fracos'] ?? '';
+        $valores = $_POST['valores'] ?? '';
+        $aptidoes = implode(', ', $_POST['aptidoes'] ?? []);
+        $rel_familia = $_POST['familia'] ?? '';
+        $rel_amigos = $_POST['amigos'] ?? '';
+        $rel_escola = $_POST['escola'] ?? '';
+        $rel_sociedade = $_POST['sociedade'] ?? '';
+        $gosto = $_POST['gosto_fazer'] ?? '';
+        $nao_gosto = $_POST['nao_gosto'] ?? '';
+        $rotina = $_POST['rotina'] ?? '';
+        $lazer = $_POST['lazer'] ?? '';
+        $estudos = $_POST['estudos'] ?? '';
+        $vida_escolar = $_POST['vida_escolar'] ?? '';
+        $visao_fisica = $_POST['visao_fisica'] ?? '';
+        $visao_intelectual = $_POST['visao_intelectual'] ?? '';
+        $visao_emocional = $_POST['visao_emocional'] ?? '';
+        $visao_amigos = $_POST['visao_amigos'] ?? '';
+        $visao_familiares = $_POST['visao_familiares'] ?? '';
+        $visao_professores = $_POST['visao_professores'] ?? '';
+        $auto_total = (int) ($_POST['autovalorizacao'] ?? 0);
+
+        $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (
+            user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores,
+            principais_aptidoes, relacoes_familia, relacoes_amigos, relacoes_escola, relacoes_sociedade,
+            gosto_fazer, nao_gosto_fazer, rotina, lazer, estudos, vida_escolar,
+            visao_fisica, visao_intelectual, visao_emocional,
+            visao_dos_amigos, visao_dos_familiares, visao_dos_professores, autovalorizacao_total
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmt->execute([
+            $user_id, $fale, $lembrancas, $p_fortes, $p_fracos, $valores,
+            $aptidoes, $rel_familia, $rel_amigos, $rel_escola, $rel_sociedade,
+            $gosto, $nao_gosto, $rotina, $lazer, $estudos, $vida_escolar,
+            $visao_fisica, $visao_intelectual, $visao_emocional,
+            $visao_amigos, $visao_familiares, $visao_professores, $auto_total
+        ]);
+
+        header("Location: user.php");
+        exit;
+    }
 }
 
-// Upload de foto de perfil
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) {
     $file = $_FILES["profile_picture"];
-    $uploadDir = __DIR__ . "/img/"; // Caminho absoluto para a pasta
+    $uploadDir = __DIR__ . "/img/";
 
     $allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     $fileType = mime_content_type($file["tmp_name"]);
 
     if ($file["error"] === 0 && in_array($fileType, $allowedTypes)) {
-        // Criar diretório se não existir
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
@@ -82,7 +126,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
         if (move_uploaded_file($file["tmp_name"], $uploadDir . $fileName)) {
             $stmt = $pdo->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
             $stmt->execute([$filePath, $user_id]);
-
             header("Location: user.php");
             exit();
         } else {
@@ -91,62 +134,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     } else {
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
-
-
-
-    $user_id = $_SESSION['user_id'] ?? null;
-    if (!$user_id) {
-        die("Usuário não autenticado.");
-    }
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_perfil_completo'])) {
-        $fale = $_POST['fale_sobre_voce'] ?? '';
-        $lembrancas = $_POST['minhas_lembrancas'] ?? '';
-        $p_fortes = $_POST['pontos_fortes'] ?? '';
-        $p_fracos = $_POST['pontos_fracos'] ?? '';
-        $valores = $_POST['meus_valores'] ?? '';
-        $aptidoes = implode(', ', $_POST['aptidoes'] ?? []);
-        $rel_familia = $_POST['relacoes_familia'] ?? '';
-        $rel_amigos = $_POST['relacoes_amigos'] ?? '';
-        $rel_escola = $_POST['relacoes_escola'] ?? '';
-        $rel_sociedade = $_POST['relacoes_sociedade'] ?? '';
-        $gosto = $_POST['gosto_fazer'] ?? '';
-        $nao_gosto = $_POST['nao_gosto_fazer'] ?? '';
-        $rotina = $_POST['rotina'] ?? '';
-        $lazer = $_POST['lazer'] ?? '';
-        $estudos = $_POST['estudos'] ?? '';
-        $vida_escolar = $_POST['vida_escolar'] ?? '';
-        $visao_fisica = $_POST['visao_fisica'] ?? '';
-        $visao_intelectual = $_POST['visao_intelectual'] ?? '';
-        $visao_emocional = $_POST['visao_emocional'] ?? '';
-        $visao_amigos = $_POST['visao_dos_amigos'] ?? '';
-        $visao_familiares = $_POST['visao_dos_familiares'] ?? '';
-        $visao_professores = $_POST['visao_dos_professores'] ?? '';
-        $auto_total = (int) ($_POST['autovalorizacao_total'] ?? 0);
-    
-        $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (
-            user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores,
-            principais_aptidoes, relacoes_familia, relacoes_amigos, relacoes_escola, relacoes_sociedade,
-            gosto_fazer, nao_gosto_fazer, rotina, lazer, estudos, vida_escolar,
-            visao_fisica, visao_intelectual, visao_emocional,
-            visao_dos_amigos, visao_dos_familiares, visao_dos_professores, autovalorizacao_total
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    
-        $stmt->execute([
-            $user_id, $fale, $lembrancas, $p_fortes, $p_fracos, $valores,
-            $aptidoes, $rel_familia, $rel_amigos, $rel_escola, $rel_sociedade,
-            $gosto, $nao_gosto, $rotina, $lazer, $estudos, $vida_escolar,
-            $visao_fisica, $visao_intelectual, $visao_emocional,
-            $visao_amigos, $visao_familiares, $visao_professores, $auto_total
-        ]);
-    
-        header("Location: user.php?sucesso=1");
-        exit;
-    }
 }
 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
