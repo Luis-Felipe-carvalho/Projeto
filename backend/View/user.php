@@ -41,6 +41,11 @@ if (!$user) {
 
 $authType = $_SESSION['auth_type'] ?? 'normal';
 
+// Buscar dados do formulário "Quem Sou Eu" (se existirem)
+$stmt = $pdo->prepare("SELECT * FROM quem_sou_eu WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$perfil = $stmt->fetch(PDO::FETCH_ASSOC);
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['description'])) {
         $new_description = $_POST['description'];
@@ -51,13 +56,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if (isset($_POST['edit_usuario'])) {
-        $new_nome = trim($_POST['nome']);
+        $new_name = trim($_POST['name']);
         $new_email = trim($_POST['email']);
 
-        if (!empty($new_nome) && !empty($new_email)) {
+        if (!empty($new_name) && !empty($new_email)) {
             $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-            $stmt->execute([$new_nome, $new_email, $user_id]);
-            $username = $new_nome;
+            $stmt->execute([$new_name, $new_email, $user_id]);
+            $username = $new_name;
             $user['email'] = $new_email;
         }
     }
@@ -87,21 +92,79 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $visao_professores = $_POST['visao_professores'] ?? '';
         $auto_total = (int) ($_POST['autovalorizacao'] ?? 0);
 
-        $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (
-            user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores,
-            principais_aptidoes, relacoes_familia, relacoes_amigos, relacoes_escola, relacoes_sociedade,
-            gosto_fazer, nao_gosto_fazer, rotina, lazer, estudos, vida_escolar,
-            visao_fisica, visao_intelectual, visao_emocional,
-            visao_dos_amigos, visao_dos_familiares, visao_dos_professores, autovalorizacao_total
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM quem_sou_eu WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $existe = $stmt->fetchColumn();
 
-        $stmt->execute([
-            $user_id, $fale, $lembrancas, $p_fortes, $p_fracos, $valores,
-            $aptidoes, $rel_familia, $rel_amigos, $rel_escola, $rel_sociedade,
-            $gosto, $nao_gosto, $rotina, $lazer, $estudos, $vida_escolar,
-            $visao_fisica, $visao_intelectual, $visao_emocional,
-            $visao_amigos, $visao_familiares, $visao_professores, $auto_total
-        ]);
+        if ($existe) {
+            $stmt = $pdo->prepare("UPDATE quem_sou_eu SET 
+                fale_sobre_voce=?, minhas_lembrancas=?, pontos_fortes=?, pontos_fracos=?, meus_valores=?,
+                principais_aptidoes=?, relacoes_familia=?, relacoes_amigos=?, relacoes_escola=?, relacoes_sociedade=?,
+                gosto_fazer=?, nao_gosto_fazer=?, rotina=?, lazer=?, estudos=?, vida_escolar=?,
+                visao_fisica=?, visao_intelectual=?, visao_emocional=?,
+                visao_dos_amigos=?, visao_dos_familiares=?, visao_dos_professores=?, autovalorizacao_total=?
+                WHERE user_id = ?");
+            $stmt->execute([
+                $fale,
+                $lembrancas,
+                $p_fortes,
+                $p_fracos,
+                $valores,
+                $aptidoes,
+                $rel_familia,
+                $rel_amigos,
+                $rel_escola,
+                $rel_sociedade,
+                $gosto,
+                $nao_gosto,
+                $rotina,
+                $lazer,
+                $estudos,
+                $vida_escolar,
+                $visao_fisica,
+                $visao_intelectual,
+                $visao_emocional,
+                $visao_amigos,
+                $visao_familiares,
+                $visao_professores,
+                $auto_total,
+                $user_id
+            ]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO quem_sou_eu (
+                user_id, fale_sobre_voce, minhas_lembrancas, pontos_fortes, pontos_fracos, meus_valores,
+                principais_aptidoes, relacoes_familia, relacoes_amigos, relacoes_escola, relacoes_sociedade,
+                gosto_fazer, nao_gosto_fazer, rotina, lazer, estudos, vida_escolar,
+                visao_fisica, visao_intelectual, visao_emocional,
+                visao_dos_amigos, visao_dos_familiares, visao_dos_professores, autovalorizacao_total
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $user_id,
+                $fale,
+                $lembrancas,
+                $p_fortes,
+                $p_fracos,
+                $valores,
+                $aptidoes,
+                $rel_familia,
+                $rel_amigos,
+                $rel_escola,
+                $rel_sociedade,
+                $gosto,
+                $nao_gosto,
+                $rotina,
+                $lazer,
+                $estudos,
+                $vida_escolar,
+                $visao_fisica,
+                $visao_intelectual,
+                $visao_emocional,
+                $visao_amigos,
+                $visao_familiares,
+                $visao_professores,
+                $auto_total
+            ]);
+        }
 
         header("Location: user.php");
         exit;
@@ -138,6 +201,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
 ?>
+
 
 
 <!DOCTYPE html>
@@ -188,27 +252,25 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
             <?php if ($authType === 'normal'): ?>
                 <?php
                 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_usuario'])) {
-                    $new_name = trim($_POST['nome']);
+                    $new_name = trim($_POST['name']);
                     $new_email = trim($_POST['email']);
 
-                    if (!empty($new_nome) && !empty($new_email)) {
-                        $stmt = $pdo->prepare("UPDATE users SET nome = ?, email = ? WHERE id = ?");
-                        if ($stmt->execute([$new_nome, $new_email, $user['id']])) {
-                            $username = $new_nome;
+                    if (!empty($new_name) && !empty($new_email)) {
+                        $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
+                        if ($stmt->execute([$new_name, $new_email, $user['id']])) {
+                            $username = $new_name;
                             $user['email'] = $new_email;
                             echo "<p style='color: green;'>Dados atualizados com sucesso.</p>";
                         } else {
                             echo "<p style='color: red;'>Erro ao atualizar dados.</p>";
                         }
-                    } else {
-                        echo "<p style='color: red;'>Preencha todos os campos.</p>";
                     }
                 }
                 ?>
 
-                <form method="POST">
-                    <h2>Nome de Usuário:</h2>
-                    <input type="text" name="nome" value="<?= htmlspecialchars($username) ?>">
+                <form class="user-info" method="POST">
+                    <h2>name de Usuário:</h2>
+                    <input type="text" name="name" value="<?= htmlspecialchars($username) ?>">
 
                     <h2>Email:</h2>
                     <input type="email" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
@@ -217,10 +279,10 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                 </form>
 
             <?php elseif ($authType === 'google' && isset($info)): ?>
-                <h2>Nome de Usuário: <?= htmlspecialchars($info['name'] ?? 'Nome não disponível') ?></h2>
+                <h2>name de Usuário: <?= htmlspecialchars($info['name'] ?? 'name não disponível') ?></h2>
                 <h2>Email: <?= htmlspecialchars($info['email'] ?? 'Email não disponível') ?></h2>
             <?php else: ?>
-                <h2>Nome de Usuário: Não disponível</h2>
+                <h2>name de Usuário: Não disponível</h2>
                 <h2>Email: Não disponível</h2>
             <?php endif; ?>
 
@@ -233,111 +295,174 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
             <textarea name="description" rows="5"><?= htmlspecialchars($user['description'] ?? '') ?></textarea>
             <button type="submit">Salvar</button>
         </form>
+        <style>
+            .form-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
+            .question {
+                width: 100%;
+                max-width: 700px;
+                display: none;
+                animation: fadeIn 0.4s ease-in-out;
+                margin-bottom: 20px;
+                background: #f0f0f0;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .question.active {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .resultado {
+                background: #e7f3ff;
+                border: 1px solid #b3d7ff;
+                padding: 15px;
+                border-radius: 8px;
+                margin-top: 20px;
+                display: none;
+            }
+        </style>
 
         <!-- Formulário "Quem Sou Eu?" -->
-        <h3>Quem Sou Eu?</h3>
-        <form method="POST" action="user.php">
-            <!-- Fale sobre você -->
-            <label for="sobre_voce">Fale sobre você:</label>
-            <textarea name="sobre_voce" rows="4"><?= htmlspecialchars($user['sobre_voce'] ?? '') ?></textarea>
+        <h3>Formulário "Quem Sou Eu"</h3>
+        <button class="btn" id="startForm">Começar Formulário</button>
+        <?php if (!empty($perfil)): ?>
+            <button class="btn" id="mostrarResultados">Exibir resultados do formulário</button>
+        <?php endif; ?>
 
-            <!-- Minhas Lembranças -->
-            <label for="lembrancas">Minhas Lembranças:</label>
-            <textarea name="lembrancas" rows="4"><?= htmlspecialchars($user['lembrancas'] ?? '') ?></textarea>
-
-            <!-- Pontos Fortes e Fracos -->
-            <label for="pontos_fortes">Pontos Fortes:</label>
-            <input type="text" name="pontos_fortes" value="<?= htmlspecialchars($user['pontos_fortes'] ?? '') ?>">
-
-            <label for="pontos_fracos">Pontos Fracos:</label>
-            <input type="text" name="pontos_fracos" value="<?= htmlspecialchars($user['pontos_fracos'] ?? '') ?>">
-
-            <!-- Meus Valores -->
-            <label for="valores">Meus Valores (separar por vírgula):</label>
-            <input type="text" name="valores" value="<?= htmlspecialchars($user['valores'] ?? '') ?>">
-
-            <!-- Aptidões -->
-            <label>Minhas Principais Aptidões:</label><br>
+        <form class="form-grid" method="post" id="formularioQuemSouEu">
             <?php
-            $aptidoes = ['Liderança', 'Empatia', 'Organização', 'Criatividade', 'Comunicação'];
-            foreach ($aptidoes as $apt) {
-                $checked = (isset($user['aptidoes']) && in_array($apt, explode(',', $user['aptidoes']))) ? 'checked' : '';
-                echo "<label><input type='checkbox' name='aptidoes[]' value='$apt' $checked> $apt</label><br>";
+            $perguntas = [
+                'sobre_voce' => 'Fale sobre você:',
+                'lembrancas' => 'Minhas lembranças:',
+                'pontos_fortes' => 'Pontos fortes:',
+                'pontos_fracos' => 'Pontos fracos:',
+                'valores' => 'Meus valores:',
+                'aptidoes' => 'Principais aptidões (separe com vírgulas):',
+                'familia' => 'Relação com a família:',
+                'amigos' => 'Relação com amigos:',
+                'escola' => 'Relação com a escola:',
+                'sociedade' => 'Relação com a sociedade:',
+                'gosto_fazer' => 'O que gosto de fazer:',
+                'nao_gosto' => 'O que não gosto de fazer:',
+                'rotina' => 'Minha rotina:',
+                'lazer' => 'Meu lazer:',
+                'estudos' => 'Meus estudos:',
+                'vida_escolar' => 'Minha vida escolar:',
+                'visao_fisica' => 'Visão física:',
+                'visao_intelectual' => 'Visão intelectual:',
+                'visao_emocional' => 'Visão emocional:',
+                'visao_amigos' => 'O que meus amigos dizem sobre mim:',
+                'visao_familiares' => 'O que meus familiares dizem sobre mim:',
+                'visao_professores' => 'O que meus professores dizem sobre mim:'
+            ];
+            $index = 0;
+            foreach ($perguntas as $campo => $texto) {
+                echo "<div class='question' id='q$index'>";
+                echo "<label for='$campo'>$texto</label>";
+                if ($campo === 'aptidoes') {
+                    echo "<input type='text' name='aptidoes[]' value='" . htmlspecialchars($perfil['principais_aptidoes'] ?? '') . "'>";
+                } else {
+                    echo "<textarea name='$campo'>" . htmlspecialchars($perfil[$campo] ?? '') . "</textarea>";
+                }
+                echo "</div>";
+                $index++;
             }
             ?>
-
-            <!-- Relacionamentos -->
-            <label for="familia">Família:</label>
-            <input type="text" name="familia" value="<?= htmlspecialchars($user['familia'] ?? '') ?>">
-
-            <label for="amigos">Amigos:</label>
-            <input type="text" name="amigos" value="<?= htmlspecialchars($user['amigos'] ?? '') ?>">
-
-            <label for="escola">Escola:</label>
-            <input type="text" name="escola" value="<?= htmlspecialchars($user['escola'] ?? '') ?>">
-
-            <label for="sociedade">Sociedade:</label>
-            <input type="text" name="sociedade" value="<?= htmlspecialchars($user['sociedade'] ?? '') ?>">
-
-            <!-- Meu Dia a Dia -->
-            <label for="gosto_fazer">O que gosto de fazer:</label>
-            <input type="text" name="gosto_fazer" value="<?= htmlspecialchars($user['gosto_fazer'] ?? '') ?>">
-
-            <label for="nao_gosto">O que não gosto:</label>
-            <input type="text" name="nao_gosto" value="<?= htmlspecialchars($user['nao_gosto'] ?? '') ?>">
-
-            <label for="rotina">Rotina:</label>
-            <input type="text" name="rotina" value="<?= htmlspecialchars($user['rotina'] ?? '') ?>">
-
-            <label for="lazer">Lazer:</label>
-            <input type="text" name="lazer" value="<?= htmlspecialchars($user['lazer'] ?? '') ?>">
-
-            <label for="estudos">Estudos:</label>
-            <input type="text" name="estudos" value="<?= htmlspecialchars($user['estudos'] ?? '') ?>">
-
-            <!-- Vida Escolar -->
-            <label for="vida_escolar">Minha Vida Escolar:</label>
-            <textarea name="vida_escolar" rows="3"><?= htmlspecialchars($user['vida_escolar'] ?? '') ?></textarea>
-
-            <!-- Minha Visão Sobre Mim -->
-            <label for="visao_fisica">Visão Física:</label>
-            <input type="text" name="visao_fisica" value="<?= htmlspecialchars($user['visao_fisica'] ?? '') ?>">
-
-            <label for="visao_intelectual">Visão Intelectual:</label>
-            <input type="text" name="visao_intelectual" value="<?= htmlspecialchars($user['visao_intelectual'] ?? '') ?>">
-
-            <label for="visao_emocional">Visão Emocional:</label>
-            <input type="text" name="visao_emocional" value="<?= htmlspecialchars($user['visao_emocional'] ?? '') ?>">
-
-            <!-- Visão das Pessoas Sobre Mim -->
-            <label for="visao_amigos">O que meus amigos dizem:</label>
-            <input type="text" name="visao_amigos" value="<?= htmlspecialchars($user['visao_amigos'] ?? '') ?>">
-
-            <label for="visao_familiares">O que minha família diz:</label>
-            <input type="text" name="visao_familiares" value="<?= htmlspecialchars($user['visao_familiares'] ?? '') ?>">
-
-            <label for="visao_professores">O que meus professores dizem:</label>
-            <input type="text" name="visao_professores" value="<?= htmlspecialchars($user['visao_professores'] ?? '') ?>">
-
-            <!-- Autovalorização (exemplo simplificado) -->
-            <label for="autovalorizacao">Como você se sente sobre você mesmo(a)?</label>
-            <select name="autovalorizacao">
-                <option value="1" <?= ($user['autovalorizacao'] ?? '') == '1' ? 'selected' : '' ?>>1 - Muito Ruim</option>
-                <option value="2" <?= ($user['autovalorizacao'] ?? '') == '2' ? 'selected' : '' ?>>2</option>
-                <option value="3" <?= ($user['autovalorizacao'] ?? '') == '3' ? 'selected' : '' ?>>3 - Regular</option>
-                <option value="4" <?= ($user['autovalorizacao'] ?? '') == '4' ? 'selected' : '' ?>>4</option>
-                <option value="5" <?= ($user['autovalorizacao'] ?? '') == '5' ? 'selected' : '' ?>>5 - Excelente</option>
-            </select>
-
-            <button type="submit">Salvar Formulário</button>
+            <div class="question" id="final">
+                <label for="autovalorizacao">Autovalorização total:</label>
+                <input type="number" name="autovalorizacao" min="0" max="100" value="<?= htmlspecialchars($perfil['autovalorizacao_total'] ?? 0) ?>">
+                <button type="submit" name="salvar_perfil_completo" class="btn">Salvar Perfil</button>
+            </div>
         </form>
 
+        <div class="resultado" id="resultadoPerfil">
+            <h3>Resultados do Formulário</h3>
+            <?php
+            if (!empty($perfil)) {
+                foreach ($perfil as $chave => $valor) {
+                    echo "<p><strong>" . ucfirst(str_replace('_', ' ', $chave)) . ":</strong> " . nl2br(htmlspecialchars($valor)) . "</p>";
+                }
+            } else {
+                echo "<p>Nenhum dado disponível.</p>";
+            }
+            ?>
+        </div>
     </section>
 
+    <!-- "alterar foto" -->
     <script>
-        document.getElementById("profile_picture").addEventListener("change", function() {
-            document.getElementById("uploadForm").submit();
+        const perguntas = document.querySelectorAll('.question');
+        const botaoIniciar = document.getElementById('startForm');
+        const botaoMostrarResultados = document.getElementById('mostrarResultados');
+        const resultado = document.getElementById('resultadoPerfil');
+
+        let indice = 0;
+
+        function mostrarPergunta(index) {
+            perguntas.forEach((p, i) => {
+                p.classList.remove('active');
+                if (i === index) {
+                    p.classList.add('active');
+                }
+            });
+        }
+
+        function proximo() {
+            if (indice < perguntas.length - 1) {
+                indice++;
+                mostrarPergunta(indice);
+            }
+        }
+
+        botaoIniciar.addEventListener('click', () => {
+            botaoIniciar.style.display = 'none';
+            mostrarPergunta(indice);
+        });
+
+        botaoMostrarResultados.addEventListener('click', () => {
+            resultado.style.display = 'block';
+            window.scrollTo({
+                top: resultado.offsetTop,
+                behavior: 'smooth'
+            });
+        });
+
+        perguntas.forEach((p) => {
+            const input = p.querySelector('textarea, input');
+            if (input) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        proximo();
+                    }
+                });
+
+                const btnProximo = document.createElement('button');
+                btnProximo.textContent = 'Próxima';
+                btnProximo.type = 'button';
+                btnProximo.className = 'btn';
+                btnProximo.style.marginTop = '10px';
+                btnProximo.addEventListener('click', proximo);
+                p.appendChild(btnProximo);
+            }
         });
     </script>
 
