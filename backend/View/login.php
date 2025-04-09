@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['email'] = $email;
 
         echo "<p>Login realizado com sucesso! Redirecionando...</p>";
-        header("refresh:3; url=user.php"); // Redireciona após 2 segundos
+        header("refresh:2; url=user.php"); // Redireciona após 2 segundos
         exit;
     } else {
         echo "<p style='color: red;'>E-mail ou senha incorretos.</p>";
@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     }
 
                     ?>
-                    <button class="btn btn-primary"><a href='Esqueci_senha.php'>Esqueci minha senha!</a></button>
+                    <button><a href='Esqueci_senha.php'>Esqueci minha senha!</a></button>
                     <br>
                     <br>
                     <div class="login_google">
