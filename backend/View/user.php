@@ -442,14 +442,12 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    <hr>
+    
     <br>
     <br>
     <br>
     <br>
-
-
-    <hr>
+    
     <br>
     <br>
     <br>
