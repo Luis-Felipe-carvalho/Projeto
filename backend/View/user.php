@@ -332,9 +332,9 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
             <label for="autovalorizacao">Como você se sente sobre você mesmo(a)?</label>
             <select name="autovalorizacao">
                 <option value="1" <?= ($user['autovalorizacao'] ?? '') == '1' ? 'selected' : '' ?>>1 - Muito Ruim</option>
-                <option value="2" <?= ($user['autovalorizacao'] ?? '') == '2' ? 'selected' : '' ?>>2</option>
+                <option value="2" <?= ($user['autovalorizacao'] ?? '') == '2' ? 'selected' : '' ?>>2 - Ruim</option>
                 <option value="3" <?= ($user['autovalorizacao'] ?? '') == '3' ? 'selected' : '' ?>>3 - Regular</option>
-                <option value="4" <?= ($user['autovalorizacao'] ?? '') == '4' ? 'selected' : '' ?>>4</option>
+                <option value="4" <?= ($user['autovalorizacao'] ?? '') == '4' ? 'selected' : '' ?>>4 - Alto</option>
                 <option value="5" <?= ($user['autovalorizacao'] ?? '') == '5' ? 'selected' : '' ?>>5 - Excelente</option>
             </select>
 
