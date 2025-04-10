@@ -197,8 +197,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     } else {
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
-
-    
 }
 
 if (isset($_POST['teste_personalidade'])) {
@@ -442,12 +440,12 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    
+
     <br>
     <br>
     <br>
     <br>
-    
+
     <br>
     <br>
     <br>
