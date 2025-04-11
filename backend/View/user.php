@@ -701,7 +701,7 @@ $percentualConcluido = ($totalMetas > 0) ? round(($concluidas / $totalMetas) * 1
         }
     </style>
 
-    <h3>Progresso do Plano de Ação</h3>
+    <h3>Progresso das Metas/Tarefas</h3>
     <canvas id="graficoProgresso" width="300" height="300"></canvas>
     <h3>Nova Tarefa ou Meta</h3>
     <form method="POST" action="">
