@@ -724,6 +724,7 @@ $isEric = strtolower($username) === 'eric';
             margin-top: 10px;
         }
 
+voltar-ao-ponto
         .proximas-metas li {
             background: #f9f9f9;
             border-left: 4px solid #4caf50;
