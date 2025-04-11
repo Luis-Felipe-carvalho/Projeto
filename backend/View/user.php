@@ -197,27 +197,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     } else {
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
-
-    
 }
 
-if (isset($_POST['teste_personalidade'])) {
-    $extrovertido = (int) $_POST['extrovertido'] ?? 0;
-    $intuitivo = (int) $_POST['intuitivo'] ?? 0;
-    $racional = (int) $_POST['racional'] ?? 0;
-    $julgador = (int) $_POST['julgador'] ?? 0;
 
+if (isset($_POST['teste_personalidade'])) {
+    $extrovertido = (int) ($_POST['extrovertido'] ?? 0);
+    $intuitivo = (int) ($_POST['intuitivo'] ?? 0);
+    $racional = (int) ($_POST['racional'] ?? 0);
+    $julgador = (int) ($_POST['julgador'] ?? 0);
+
+    // Salva os dados no banco
     $stmt = $pdo->prepare("REPLACE INTO teste_personalidade (user_id, extrovertido, intuitivo, racional, julgador) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$user_id, $extrovertido, $intuitivo, $racional, $julgador]);
+
+    // Redireciona após o envio
     header("Location: user.php");
     exit;
 }
 
-$profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
-
+// Busca os dados do banco
 $stmt = $pdo->prepare("SELECT * FROM teste_personalidade WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Define traço dominante, se houver dados
+$traço_dominante = '';
+if ($personalidade) {
+    $dados = [
+        'Extrovertido' => (int) $personalidade['extrovertido'],
+        'Intuitivo' => (int) $personalidade['intuitivo'],
+        'Racional' => (int) $personalidade['racional'],
+        'Julgador' => (int) $personalidade['julgador']
+    ];
+    arsort($dados);
+    $traço_dominante = array_key_first($dados);
+}
+
+$profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
+
+
 ?>
 
 
@@ -454,47 +472,139 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
     <br>
     <br>
     <br>
-    <!-- Quiz teste de personalidade-->
-    <h3>(Quiz) - Teste de personalidade -</h3>
-    <button class="btn" id="comecarQuiz">Começar Quiz!</button>
-    <form id="quizForm" method="POST" style="display: none;">
-        <input type="hidden" name="teste_personalidade" value="1">
+    <style>
+    /* Estilo geral do quiz */
+    #quizForm, .quiz-question {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
-        <div class="quiz-question">
-            <label>Você se considera extrovertido? (0 a 100)</label>
-            <input type="range" name="extrovertido" min="0" max="100">
-            <button type="button" class="proximoQuiz">Próxima</button>
+    h3 {
+        text-align: center;
+        color: #333;
+        font-weight: 600;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #444;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .btn, .proximoQuiz, form button[type="submit"] {
+        background-color: #4a90e2;
+        color: #fff;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover, .proximoQuiz:hover, form button[type="submit"]:hover {
+        background-color: #357abd;
+    }
+
+    canvas {
+        display: block;
+        margin: 40px auto;
+        max-width: 100%;
+    }
+
+    .quiz-question {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .quiz-question:first-of-type {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .highlight-result {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+        margin-top: 30px;
+        background: #e8f0fe;
+        padding: 15px;
+        border-left: 5px solid #4a90e2;
+        border-radius: 10px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<!-- Quiz teste de personalidade-->
+<h3>(Quiz) - Teste de personalidade -</h3>
+<button class="btn" id="comecarQuiz">Começar Quiz!</button>
+
+<form id="quizForm" method="POST" style="display: none;">
+    <input type="hidden" name="teste_personalidade" value="1">
+
+    <div class="quiz-question">
+        <label>Você se considera extrovertido? (0 a 100)</label>
+        <input type="range" name="extrovertido" min="0" max="100">
+        <button type="button" class="proximoQuiz">Próxima</button>
+    </div>
+
+    <div class="quiz-question">
+        <label>Você confia mais na intuição do que nos fatos? (0 a 100)</label>
+        <input type="range" name="intuitivo" min="0" max="100">
+        <button type="button" class="proximoQuiz">Próxima</button>
+    </div>
+
+    <div class="quiz-question">
+        <label>Toma decisões com base na lógica? (0 a 100)</label>
+        <input type="range" name="racional" min="0" max="100">
+        <button type="button" class="proximoQuiz">Próxima</button>
+    </div>
+
+    <div class="quiz-question">
+        <label>Você prefere organização e planejamento? (0 a 100)</label>
+        <input type="range" name="julgador" min="0" max="100">
+        <button type="submit">Salvar Teste</button>
+    </div>
+</form>
+
+<?php if ($personalidade): ?>
+    <?php if ($traço_dominante): ?>
+        <div class="highlight-result">
+            <?php if ($traço_dominante === "Racional"): ?>
+                <strong>Ótimo!</strong> Você é  <strong>Racional</strong>: lógico e analítico!
+            <?php elseif ($traço_dominante === "Extrovertido"): ?>
+                <strong>Ótimo!</strong> Você é  <strong>Extrovertido</strong>: comunicativo e sociável!
+            <?php elseif ($traço_dominante === "Intuitivo"): ?>
+                <strong>Ótimo!</strong> Você é  <strong>Intuitivo</strong>: guiado pela sua intuição!
+            <?php elseif ($traço_dominante === "Julgador"): ?>
+                <strong>Ótimo!</strong> Você é  <strong>Julgador</strong>: organizado e planejador!
+            <?php endif; ?>
         </div>
-
-        <div class="quiz-question" style="display:none;">
-            <label>Você confia mais na intuição do que nos fatos? (0 a 100)</label>
-            <input type="range" name="intuitivo" min="0" max="100">
-            <button type="button" class="proximoQuiz">Próxima</button>
-        </div>
-
-        <div class="quiz-question" style="display:none;">
-            <label>Toma decisões com base na lógica? (0 a 100)</label>
-            <input type="range" name="racional" min="0" max="100">
-            <button type="button" class="proximoQuiz">Próxima</button>
-        </div>
-
-        <div class="quiz-question" style="display:none;">
-            <label>Você prefere organização e planejamento? (0 a 100)</label>
-            <input type="range" name="julgador" min="0" max="100">
-            <button type="submit">Salvar Teste</button>
-        </div>
-    </form>
-
-    <?php if ($personalidade): ?>
-        <h3>Resultado do Teste de Personalidade</h3>
-        <canvas id="graficoPersonalidade" width="400" height="200"></canvas>
     <?php endif; ?>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+
+    <h3>Resultado do Teste de Personalidade</h3>
+    <canvas id="graficoPersonalidade" width="600" height="400"></canvas>
+<?php endif; ?>
+
     <!-- script -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
