@@ -197,9 +197,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     } else {
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
+
+    
+}
+
+if (isset($_POST['teste_personalidade'])) {
+    $extrovertido = (int) $_POST['extrovertido'] ?? 0;
+    $intuitivo = (int) $_POST['intuitivo'] ?? 0;
+    $racional = (int) $_POST['racional'] ?? 0;
+    $julgador = (int) $_POST['julgador'] ?? 0;
+
+    $stmt = $pdo->prepare("REPLACE INTO teste_personalidade (user_id, extrovertido, intuitivo, racional, julgador) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$user_id, $extrovertido, $intuitivo, $racional, $julgador]);
+    header("Location: user.php");
+    exit;
 }
 
 $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
+
+$stmt = $pdo->prepare("SELECT * FROM teste_personalidade WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -212,6 +230,7 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto de vida - Estudante de programação</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -423,7 +442,60 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
         </div>
     </section>
 
-    <!-- "alterar foto" -->
+    <hr>
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+    <hr>
+    <br>
+    <br>
+    <br>
+    <br>
+    <!-- Quiz teste de personalidade-->
+    <h3>(Quiz) - Teste de personalidade -</h3>
+    <button class="btn" id="comecarQuiz">Começar Quiz!</button>
+    <form id="quizForm" method="POST" style="display: none;">
+        <input type="hidden" name="teste_personalidade" value="1">
+
+        <div class="quiz-question">
+            <label>Você se considera extrovertido? (0 a 100)</label>
+            <input type="range" name="extrovertido" min="0" max="100">
+            <button type="button" class="proximoQuiz">Próxima</button>
+        </div>
+
+        <div class="quiz-question" style="display:none;">
+            <label>Você confia mais na intuição do que nos fatos? (0 a 100)</label>
+            <input type="range" name="intuitivo" min="0" max="100">
+            <button type="button" class="proximoQuiz">Próxima</button>
+        </div>
+
+        <div class="quiz-question" style="display:none;">
+            <label>Toma decisões com base na lógica? (0 a 100)</label>
+            <input type="range" name="racional" min="0" max="100">
+            <button type="button" class="proximoQuiz">Próxima</button>
+        </div>
+
+        <div class="quiz-question" style="display:none;">
+            <label>Você prefere organização e planejamento? (0 a 100)</label>
+            <input type="range" name="julgador" min="0" max="100">
+            <button type="submit">Salvar Teste</button>
+        </div>
+    </form>
+
+    <?php if ($personalidade): ?>
+        <h3>Resultado do Teste de Personalidade</h3>
+        <canvas id="graficoPersonalidade" width="400" height="200"></canvas>
+    <?php endif; ?>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <!-- script -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const perguntas = document.querySelectorAll('.question');
@@ -451,14 +523,15 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                 }
             }
 
-            botaoIniciar.addEventListener('click', () => {
-                botaoIniciar.style.display = 'none';
-                mostrarPergunta(indice);
-            });
+            if (botaoIniciar) {
+                botaoIniciar.addEventListener('click', () => {
+                    botaoIniciar.style.display = 'none';
+                    mostrarPergunta(indice);
+                });
+            }
 
             if (botaoMostrarResultados) {
                 botaoMostrarResultados.addEventListener('click', function() {
-                    // Toggle de exibição
                     if (resultado.style.display === "none" || resultado.style.display === "") {
                         resultado.style.display = "block";
                         this.textContent = "Ocultar resultados do formulário";
@@ -494,9 +567,66 @@ $profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : 
                     });
                 }
             });
-
         });
     </script>
+
+    <!--script quiz-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const quizForm = document.getElementById('quizForm');
+            const comecarQuiz = document.getElementById('comecarQuiz');
+            const perguntasQuiz = quizForm.querySelectorAll('.quiz-question');
+            let indiceQuiz = 0;
+
+            comecarQuiz.addEventListener('click', () => {
+                comecarQuiz.style.display = 'none';
+                quizForm.style.display = 'block';
+                perguntasQuiz[indiceQuiz].style.display = 'block';
+            });
+
+            const botoesProximo = quizForm.querySelectorAll('.proximoQuiz');
+            botoesProximo.forEach((botao, i) => {
+                botao.addEventListener('click', () => {
+                    perguntasQuiz[i].style.display = 'none';
+                    if (i + 1 < perguntasQuiz.length) {
+                        perguntasQuiz[i + 1].style.display = 'block';
+                    }
+                });
+            });
+
+            <?php if ($personalidade): ?>
+                const ctx = document.getElementById('graficoPersonalidade');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Extrovertido', 'Intuitivo', 'Racional', 'Julgador'],
+                        datasets: [{
+                            label: 'Perfil de Personalidade',
+                            data: [
+                                <?= $personalidade['extrovertido'] ?>,
+                                <?= $personalidade['intuitivo'] ?>,
+                                <?= $personalidade['racional'] ?>,
+                                <?= $personalidade['julgador'] ?>
+                            ],
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            <?php endif; ?>
+        });
+    </script>
+
+
 
 </body>
 

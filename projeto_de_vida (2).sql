@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 09/04/2025 às 13:58
+-- Tempo de geração: 09/04/2025 às 20:29
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -44,7 +44,8 @@ INSERT INTO `feedback` (`id`, `nome`, `email`, `mensagem`, `Assunto`, `data_envi
 (1, 'Eric', 'ericsouzapalma123@gmail.com', 'femgklersngjkrndklgtr', '', '2025-04-04 17:08:50'),
 (2, 'Eric', 'ericsouzapalma123@gmail.com', 'amfkwejkarfjrg', 'Viagem', '2025-04-04 17:16:24'),
 (3, 'Eric', 'ericsouzapalma123@gmail.com', 'amfkwejkarfjrg', 'Viagem', '2025-04-04 17:28:17'),
-(4, 'Eric', 'ericsouzapalma123@gmail.com', 'amfkwejkarfjrg', 'Viagem', '2025-04-04 17:50:10');
+(4, 'Eric', 'ericsouzapalma123@gmail.com', 'amfkwejkarfjrg', 'Viagem', '2025-04-04 17:50:10'),
+(5, 'dcdsvdcvd', 'vvdsvxsvdscsxsd@email.com', 'asdczxcv\\sd', 'dsvdsavdsvc', '2025-04-09 16:10:59');
 
 -- --------------------------------------------------------
 
@@ -81,12 +82,27 @@ CREATE TABLE `quem_sou_eu` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Despejando dados para a tabela `quem_sou_eu`
+-- Estrutura para tabela `teste_personalidade`
 --
 
-INSERT INTO `quem_sou_eu` (`id`, `user_id`, `fale_sobre_voce`, `minhas_lembrancas`, `pontos_fortes`, `pontos_fracos`, `meus_valores`, `principais_aptidoes`, `relacoes_familia`, `relacoes_amigos`, `relacoes_escola`, `relacoes_sociedade`, `gosto_fazer`, `nao_gosto_fazer`, `rotina`, `lazer`, `estudos`, `vida_escolar`, `visao_fisica`, `visao_intelectual`, `visao_emocional`, `visao_dos_amigos`, `visao_dos_familiares`, `visao_dos_professores`, `autovalorizacao_total`, `created_at`) VALUES
-(1, 8, 'nada', 'nada', 'nada', 'nada', 'nada', 'nada,nada,nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 'nada', 10, '2025-04-09 11:56:34');
+CREATE TABLE `teste_personalidade` (
+  `user_id` int(11) NOT NULL,
+  `extrovertido` tinyint(3) UNSIGNED NOT NULL,
+  `intuitivo` tinyint(3) UNSIGNED NOT NULL,
+  `racional` tinyint(3) UNSIGNED NOT NULL,
+  `julgador` tinyint(3) UNSIGNED NOT NULL,
+  `data_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Despejando dados para a tabela `teste_personalidade`
+--
+
+INSERT INTO `teste_personalidade` (`user_id`, `extrovertido`, `intuitivo`, `racional`, `julgador`, `data_registro`) VALUES
+(8, 77, 78, 83, 78, '2025-04-09 18:28:34');
 
 -- --------------------------------------------------------
 
@@ -113,10 +129,11 @@ INSERT INTO `users` (`id`, `username`, `email`, `description`, `password`, `data
 (5, 'bernini', 'bernini@bernini.com', 'sor bernas senai', '1234', '2025-03-28 18:29:22', 'img/67e6e878e2c5b_OKUa.gif'),
 (6, 'Rafa', 'rafael@gmail.com', '', '1234', '2025-03-28 19:33:54', 'img/67e6ebc794cf4_XGrF.gif'),
 (7, 'roberto', 'robertohenryck365@gmail.com', 'afawdawdaw', 'Ce380@3042R', '2025-04-02 18:42:02', 'img/67ed691da037b_OKUa.gif'),
-(8, 'Eric', 'ericsouzapalma123@gmail.com', 'gfyghyghg', '$2y$10$wEDfbC7o2Y43K5IovLe1Z.yw4inAfIWaEvK02bw.vi0ELQ4B3y4p.', '2025-04-02 19:20:11', 'img/67f65061738fd_7ugE.gif'),
+(8, 'Eric', 'ericsouzapalma123@gmail.com', 'gfyghyghg', '$2y$10$alK5Xk0uZvt9Ys/zT5pLm.45soOKN6bfxyT0QXjNII2VJ9vu4c/7G', '2025-04-02 19:20:11', 'img/67f65061738fd_7ugE.gif'),
 (9, 'marim', 'marim@gmail.com', NULL, '555', '2025-04-04 17:56:25', NULL),
 (10, 'Davi', 'Davi@gmail.com', NULL, '$2y$10$YCKu6bPEhnWbc4Na2rh16.lCoKrkyDDpcfbn6OI3a9NXOXonEvO4m', '2025-04-04 18:10:35', NULL),
-(11, 'catarina', 'catarina@gmail.com', NULL, '$2y$10$17hkY1Z1cobIV1fpEFP4quB3aMpL.hxNIse//ct5mNu5N4txLpzl2', '2025-04-04 18:12:23', NULL);
+(11, 'catarina', 'catarina@gmail.com', NULL, '$2y$10$17hkY1Z1cobIV1fpEFP4quB3aMpL.hxNIse//ct5mNu5N4txLpzl2', '2025-04-04 18:12:23', NULL),
+(12, 'jonatas', 'jonatas.goncalves@sp.senai.br', 'professor do tecnico de desenvolvimento de sistemas', '$2y$10$ioo5KdmxZPy/L4cTdJlJr.wggppupiqiA.UelnrS953BnEqKbK5DK', '2025-04-09 15:56:21', 'img/67f6874466791_7ugE.gif');
 
 --
 -- Índices para tabelas despejadas
@@ -136,6 +153,12 @@ ALTER TABLE `quem_sou_eu`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Índices de tabela `teste_personalidade`
+--
+ALTER TABLE `teste_personalidade`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- Índices de tabela `users`
 --
 ALTER TABLE `users`
@@ -150,19 +173,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de tabela `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `quem_sou_eu`
 --
 ALTER TABLE `quem_sou_eu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restrições para tabelas despejadas
@@ -173,6 +196,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `quem_sou_eu`
   ADD CONSTRAINT `quem_sou_eu_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Restrições para tabelas `teste_personalidade`
+--
+ALTER TABLE `teste_personalidade`
+  ADD CONSTRAINT `teste_personalidade_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
