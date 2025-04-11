@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../config.php'; // Caminho correto para o config.php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
-    
+
     // Buscar usuário no banco de dados
     $stmt = $pdo->prepare("SELECT id, password FROM users WHERE email = ?");
     $stmt->execute([$email]);
@@ -65,27 +65,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         margin-top: -40px;
     }
 
-  .login_google {
-        display: flex;
-       justify-content: center;
-       flex-direction: column;
-    }
-    h3{
+    .login_google {
         display: flex;
         justify-content: center;
-        margin-top:10px;
+        flex-direction: column;
     }
-    .google{
+
+    h3 {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .google {
         display: flex;
         justify-content: center;
     }
-    p{
+
+    p {
         display: flex;
         justify-items: center;
         margin-top: 10px;
         margin: 0 auto;
     }
-    .botao2{
+
+    .botao2 {
         margin-top: 10px;
     }
 </style>
@@ -107,12 +111,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <br>
                     <input required="@gmail.com" type="text" name="email" placeholder="email">
                     <br>
-                   
+
 
                     <?php
                     if (isset($logged_in) && empty($logged_in)) {
                         echo "usuário ou senha estão errados, tente novamente!";
-                        
                     }
 
                     ?>
@@ -126,14 +129,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <html>
 
                         <body>
-                          <div class="google">
-                            <script src="https://accounts.google.com/gsi/client" async></script>
-                            <div id="g_id_onload"
-                                data-client_id="659345250941-hp6n6p2g45ogrgt0noqplur9tegi36vo.apps.googleusercontent.com"
-                                data-login_uri="http://localhost/Projeto-de-vida/login-google/includes/login.php"
-                                data-auto_prompt="false">
-                            </div> 
-                        </div>
+                            <div class="google">
+                                <script src="https://accounts.google.com/gsi/client" async></script>
+                                <div id="g_id_onload"
+                                    data-client_id="659345250941-hp6n6p2g45ogrgt0noqplur9tegi36vo.apps.googleusercontent.com"
+                                    data-login_uri="http://localhost/Projeto-de-vida/login-google/includes/login.php"
+                                    data-auto_prompt="false">
+                                </div>
+                            </div>
                             <div class="g_id_signin"
                                 data-type="standard"
                                 data-size="large"
@@ -141,24 +144,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 data-text="sign_in_with"
                                 data-shape="rectangular"
                                 data-logo_alignment="left">
-                           
+
+                            </div>
                     </div>
-</div>
-                    <body>
-
-</html>
-</form>
-
-
-    </div>
-   <p> Não tem uma conta? registre uma</p>
-   <div class="botao2">
-<button class="btn btn-primary"><a href="register.php">Aqui!</a></button>
-</div>
 
 
 
-</section>
-</div>
+
+                </form>
+
+
+            </div>
+            <p> Não tem uma conta? registre uma</p>
+            <div class="botao2">
+                <button class="btn btn-primary"><a href="register.php">Aqui!</a></button>
+            </div>
+
+
+
+        </section>
+
+</body>
 
 </html>
