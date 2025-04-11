@@ -281,7 +281,46 @@ $concluidas = $stmt->fetchColumn();
 
 // Evita divisão por zero
 $percentualConcluido = ($totalMetas > 0) ? round(($concluidas / $totalMetas) * 100) : 0;
+
+
+// Salvando a landing personalizada
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_landing'])) {
+    $titulo = $_POST['titulo_principal'];
+    $subtitulo = $_POST['subtitulo'];
+    $sobre = $_POST['sobre'];
+    $educacao = $_POST['educacao'];
+    $carreira = $_POST['carreira'];
+    $contato = $_POST['contato'];
+
+    $stmt = $pdo->prepare("SELECT id FROM landing_pages WHERE user_id = ?");
+    $stmt->execute([$user['id']]);
+    $exists = $stmt->fetch();
+
+    if ($exists) {
+        $stmt = $pdo->prepare("UPDATE landing_pages SET titulo_principal = ?, subtitulo = ?, sobre = ?, educacao = ?, carreira = ?, contato = ? WHERE user_id = ?");
+        $stmt->execute([$titulo, $subtitulo, $sobre, $educacao, $carreira, $contato, $user['id']]);
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO landing_pages (user_id, titulo_principal, subtitulo, sobre, educacao, carreira, contato) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user['id'], $titulo, $subtitulo, $sobre, $educacao, $carreira, $contato]);
+    }
+
+    echo "<p style='color:green;'>Landing page atualizada com sucesso!</p>";
+}
+
+
+//landings privadas para um usuario 
+if (!$user_id) {
+    echo "Acesso não autorizado.";
+    exit;
+}
+
+// Verifica se o usuário é 'Eric'
+$isEric = strtolower($username) === 'eric';
 ?>
+
+
+
+
 
 
 
@@ -891,6 +930,66 @@ $percentualConcluido = ($totalMetas > 0) ? round(($concluidas / $totalMetas) * 1
         <canvas id="graficoPersonalidade" width="600" height="400"></canvas>
     <?php endif; ?>
 
+
+
+
+
+
+
+
+
+
+    <hr>
+
+
+
+
+
+
+
+    <!-- Botão para editar a própria landing page -->
+
+
+    <!-- Lista todas as landing pages - somente visível para Eric -->
+    <?php if ($isEric): ?>
+        <h3>Landing Pages Criadas por Todos os Usuários</h3>
+        <ul>
+            <?php
+            $stmt = $pdo->query("SELECT lp.*, u.username FROM landing_pages lp JOIN users u ON lp.user_id = u.id");
+            while ($row = $stmt->fetch()):
+            ?>
+                <li>
+                    <strong><?= htmlspecialchars($row['username']) ?>:</strong>
+                    <a href="landing.php?usuario=<?= urlencode($row['username']) ?>">Ver Landing Page</a>
+                </li>
+            <?php endwhile; ?>
+        </ul>
+    <?php else: ?>
+        <h3>Minha landing page</h3>
+        <a href="landing.php">
+            <button>Criar minha landing page</button>
+        </a>
+        <a href="editar_landing.php">
+            <button>Editar Minha Landing Page</button>
+        </a>
+    <?php endif ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- script -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -1023,29 +1122,29 @@ $percentualConcluido = ($totalMetas > 0) ? round(($concluidas / $totalMetas) * 1
     </script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const ctx = document.getElementById('graficoProgresso').getContext('2d');
-new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Concluídas', 'Pendentes'],
-        datasets: [{
-            data: [<?= $concluidas ?>, <?= $totalMetas - $concluidas ?>],
-            backgroundColor: ['#0064fa', '#64748b'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('graficoProgresso').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Concluídas', 'Pendentes'],
+                datasets: [{
+                    data: [<?= $concluidas ?>, <?= $totalMetas - $concluidas ?>],
+                    backgroundColor: ['#0064fa', '#64748b'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
             }
-        }
-    }
-});
-</script>
+        });
+    </script>
 </body>
 
 </html>
