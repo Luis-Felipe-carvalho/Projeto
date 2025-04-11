@@ -197,28 +197,130 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["profile_picture"])) 
     } else {
         echo "Formato inválido. Use JPG, PNG ou GIF.";
     }
-
-    
 }
 
-if (isset($_POST['teste_personalidade'])) {
-    $extrovertido = (int) $_POST['extrovertido'] ?? 0;
-    $intuitivo = (int) $_POST['intuitivo'] ?? 0;
-    $racional = (int) $_POST['racional'] ?? 0;
-    $julgador = (int) $_POST['julgador'] ?? 0;
 
+if (isset($_POST['teste_personalidade'])) {
+    $extrovertido = (int) ($_POST['extrovertido'] ?? 0);
+    $intuitivo = (int) ($_POST['intuitivo'] ?? 0);
+    $racional = (int) ($_POST['racional'] ?? 0);
+    $julgador = (int) ($_POST['julgador'] ?? 0);
+
+    // Salva os dados no banco
     $stmt = $pdo->prepare("REPLACE INTO teste_personalidade (user_id, extrovertido, intuitivo, racional, julgador) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$user_id, $extrovertido, $intuitivo, $racional, $julgador]);
+
+    // Redireciona após o envio
     header("Location: user.php");
     exit;
 }
 
-$profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
-
+// Busca os dados do banco
 $stmt = $pdo->prepare("SELECT * FROM teste_personalidade WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Define traço dominante, se houver dados
+$traço_dominante = '';
+if ($personalidade) {
+    $dados = [
+        'Extrovertido' => (int) $personalidade['extrovertido'],
+        'Intuitivo' => (int) $personalidade['intuitivo'],
+        'Racional' => (int) $personalidade['racional'],
+        'Julgador' => (int) $personalidade['julgador']
+    ];
+    arsort($dados);
+    $traço_dominante = array_key_first($dados);
+}
+
+$profilePicture = !empty($user['profile_picture']) ? $user['profile_picture'] : "img/default.png";
+
+//progresso
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['adicionar_meta'])) {
+    $titulo = trim($_POST['titulo']);
+    $descricao = trim($_POST['descricao']);
+    $prazo = $_POST['prazo'];
+
+    if (!empty($titulo) && !empty($prazo)) {
+        $stmt = $pdo->prepare("INSERT INTO plano_acao (user_id, titulo, descricao, prazo) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$user_id, $titulo, $descricao, $prazo]);
+        header("Location: user.php"); // atualiza a página
+        exit;
+    }
+}
+
+$proximasMetas = []; // valor padrão
+
+// Buscar metas pendentes com prazo futuro
+$stmt = $pdo->prepare("SELECT * FROM plano_acao WHERE user_id = ? AND concluida = 0 AND prazo >= CURDATE() ORDER BY prazo ASC");
+$stmt->execute([$user_id]);
+$proximasMetas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$totalMetas = $dadosPlano['total'] ?? 0;
+$metasFeitas = $dadosPlano['feitas'] ?? 0;
+
+$porcentagemConcluida = $totalMetas > 0 ? round(($metasFeitas / $totalMetas) * 100) : 0;
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['concluir_meta'])) {
+    $metaId = (int) $_POST['concluir_meta'];
+    $stmt = $pdo->prepare("UPDATE plano_acao SET concluida = 1 WHERE id = ? AND user_id = ?");
+    $stmt->execute([$metaId, $user_id]);
+    header("Location: user.php");
+    exit;
+}
+
+// Busca todas as metas do usuário
+$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM plano_acao WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$totalMetas = $stmt->fetchColumn();
+
+// Busca metas concluídas
+$stmt = $pdo->prepare("SELECT COUNT(*) as concluidas FROM plano_acao WHERE user_id = ? AND concluida = 1");
+$stmt->execute([$user_id]);
+$concluidas = $stmt->fetchColumn();
+
+// Evita divisão por zero
+$percentualConcluido = ($totalMetas > 0) ? round(($concluidas / $totalMetas) * 100) : 0;
+
+
+// Salvando a landing personalizada
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_landing'])) {
+    $titulo = $_POST['titulo_principal'];
+    $subtitulo = $_POST['subtitulo'];
+    $sobre = $_POST['sobre'];
+    $educacao = $_POST['educacao'];
+    $carreira = $_POST['carreira'];
+    $contato = $_POST['contato'];
+
+    $stmt = $pdo->prepare("SELECT id FROM landing_pages WHERE user_id = ?");
+    $stmt->execute([$user['id']]);
+    $exists = $stmt->fetch();
+
+    if ($exists) {
+        $stmt = $pdo->prepare("UPDATE landing_pages SET titulo_principal = ?, subtitulo = ?, sobre = ?, educacao = ?, carreira = ?, contato = ? WHERE user_id = ?");
+        $stmt->execute([$titulo, $subtitulo, $sobre, $educacao, $carreira, $contato, $user['id']]);
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO landing_pages (user_id, titulo_principal, subtitulo, sobre, educacao, carreira, contato) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user['id'], $titulo, $subtitulo, $sobre, $educacao, $carreira, $contato]);
+    }
+
+    echo "<p style='color:green;'>Landing page atualizada com sucesso!</p>";
+}
+
+
+//landings privadas para um usuario 
+if (!$user_id) {
+    echo "Acesso não autorizado.";
+    exit;
+}
+
+// Verifica se o usuário é 'Eric'
+$isEric = strtolower($username) === 'eric';
 ?>
+
+
+
+
 
 
 
@@ -251,6 +353,172 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
             </nav>
         </div>
     </header>
+    <!--perfil css-->
+    <style>
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 16px;
+            background-color: #f4f6fa;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #4a90e2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .profile-pic-container:hover .upload-overlay {
+            opacity: 1;
+        }
+
+        .upload-overlay label {
+            cursor: pointer;
+        }
+
+        #profile_picture {
+            display: none;
+        }
+
+        .upload-btn {
+            margin-top: 10px;
+            background-color: #4a90e2;
+            color: #fff;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-btn:hover {
+            background-color: #357abd;
+        }
+
+        .user-info {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .user-info h2 {
+            margin: 12px 0 6px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .user-info input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #3e8e41;
+        }
+
+        .logout-button {
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
+
+        h3 {
+            margin-top: 40px;
+            font-size: 20px;
+            color: #333;
+            align-self: flex-start;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .form-group:hover {
+            background-color: #357abd;
+        }
+
+        @media (max-width: 600px) {
+            .profile-container {
+                padding: 20px;
+            }
+
+            .profile-pic-container {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
 
     <section class="profile-container">
         <div class="profile-pic-container">
@@ -288,7 +556,7 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
                 ?>
 
                 <form class="user-info" method="POST">
-                    <h2>name de Usuário:</h2>
+                    <h2>Nome de Usuário:</h2>
                     <input type="text" name="name" value="<?= htmlspecialchars($username) ?>">
 
                     <h2>Email:</h2>
@@ -298,10 +566,10 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
                 </form>
 
             <?php elseif ($authType === 'google' && isset($info)): ?>
-                <h2>name de Usuário: <?= htmlspecialchars($info['name'] ?? 'name não disponível') ?></h2>
+                <h2>Nome de Usuário: <?= htmlspecialchars($info['name'] ?? 'name não disponível') ?></h2>
                 <h2>Email: <?= htmlspecialchars($info['email'] ?? 'Email não disponível') ?></h2>
             <?php else: ?>
-                <h2>name de Usuário: Não disponível</h2>
+                <h2>Nome de Usuário: Não disponível</h2>
                 <h2>Email: Não disponível</h2>
             <?php endif; ?>
 
@@ -442,21 +710,180 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
     </section>
 
-    <hr>
-    <br>
-    <br>
-    <br>
-    <br>
 
+    <br>
+    <br>
+    <br>
+    <br>
+    <hr>
+    <!--css progresso-->
+    <style>
+        .proximas-metas {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+voltar-ao-ponto
+        .proximas-metas li {
+            background: #f9f9f9;
+            border-left: 4px solid #4caf50;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .prazo {
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+
+    <h3>Progresso das Metas/Tarefas</h3>
+    <canvas id="graficoProgresso" width="300" height="300"></canvas>
+    <h3>Nova Tarefa ou Meta</h3>
+    <form method="POST" action="">
+        <input type="text" name="titulo" placeholder="Título da Meta" required><br>
+        <textarea name="descricao" placeholder="Descrição (opcional)"></textarea><br>
+        <label>Prazo:</label>
+        <input type="date" name="prazo" required><br>
+        <button type="submit" name="adicionar_meta">Adicionar</button>
+    </form>
+    <h3>Próximas Tarefas/Metas</h3>
+    <ul class="proximas-metas">
+        <?php if (!empty($proximasMetas)): ?>
+            <?php foreach ($proximasMetas as $meta): ?>
+                <li style="<?= $meta['concluida'] ? 'text-decoration: line-through; color: gray;' : '' ?>">
+                    <strong><?= htmlspecialchars($meta['titulo']) ?></strong>
+                    <span class="prazo">→ até <?= date('d/m/Y', strtotime($meta['prazo'])) ?></span>
+
+                    <?php if (!$meta['concluida']): ?>
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="concluir_meta" value="<?= $meta['id'] ?>">
+                            <button type="submit">Concluir</button>
+                        </form>
+                    <?php else: ?>
+                        <span>✅ Concluída</span>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <li>Nenhuma tarefa pendente encontrada.</li>
+        <?php endif; ?>
+    </ul>
 
     <hr>
+
     <br>
     <br>
     <br>
     <br>
+    <style>
+        /* Estilo geral do quiz */
+        #quizForm,
+        .quiz-question {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h3 {
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #444;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn,
+        .proximoQuiz,
+        form button[type="submit"] {
+            background-color: #4a90e2;
+            color: #fff;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover,
+        .proximoQuiz:hover,
+        form button[type="submit"]:hover {
+            background-color: #357abd;
+        }
+
+        canvas {
+            display: block;
+            margin: 40px auto;
+            max-width: 100%;
+        }
+
+        .quiz-question {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .quiz-question:first-of-type {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .highlight-result {
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+            margin-top: 30px;
+            background: #e8f0fe;
+            padding: 15px;
+            border-left: 5px solid #4a90e2;
+            border-radius: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+
     <!-- Quiz teste de personalidade-->
     <h3>(Quiz) - Teste de personalidade -</h3>
-    <button class="btn" id="comecarQuiz">Começar Quiz!</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <button class="btn btn-primary" style="justify-content: center;" id="comecarQuiz">Começar Quiz!</button>
+
     <form id="quizForm" method="POST" style="display: none;">
         <input type="hidden" name="teste_personalidade" value="1">
 
@@ -466,19 +893,19 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
             <button type="button" class="proximoQuiz">Próxima</button>
         </div>
 
-        <div class="quiz-question" style="display:none;">
+        <div class="quiz-question">
             <label>Você confia mais na intuição do que nos fatos? (0 a 100)</label>
             <input type="range" name="intuitivo" min="0" max="100">
             <button type="button" class="proximoQuiz">Próxima</button>
         </div>
 
-        <div class="quiz-question" style="display:none;">
+        <div class="quiz-question">
             <label>Toma decisões com base na lógica? (0 a 100)</label>
             <input type="range" name="racional" min="0" max="100">
             <button type="button" class="proximoQuiz">Próxima</button>
         </div>
 
-        <div class="quiz-question" style="display:none;">
+        <div class="quiz-question">
             <label>Você prefere organização e planejamento? (0 a 100)</label>
             <input type="range" name="julgador" min="0" max="100">
             <button type="submit">Salvar Teste</button>
@@ -486,15 +913,84 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
     </form>
 
     <?php if ($personalidade): ?>
+        <?php if ($traço_dominante): ?>
+            <div class="highlight-result">
+                <?php if ($traço_dominante === "Racional"): ?>
+                    <strong>Ótimo!</strong> Você é <strong>Racional</strong>: lógico e analítico!
+                <?php elseif ($traço_dominante === "Extrovertido"): ?>
+                    <strong>Ótimo!</strong> Você é <strong>Extrovertido</strong>: comunicativo e sociável!
+                <?php elseif ($traço_dominante === "Intuitivo"): ?>
+                    <strong>Ótimo!</strong> Você é <strong>Intuitivo</strong>: guiado pela sua intuição!
+                <?php elseif ($traço_dominante === "Julgador"): ?>
+                    <strong>Ótimo!</strong> Você é <strong>Julgador</strong>: organizado e planejador!
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <h3>Resultado do Teste de Personalidade</h3>
-        <canvas id="graficoPersonalidade" width="400" height="200"></canvas>
+        <canvas id="graficoPersonalidade" width="600" height="400"></canvas>
     <?php endif; ?>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+
+
+
+
+
+
+
+
+
+
+    <hr>
+
+
+
+
+
+
+
+    <!-- Botão para editar a própria landing page -->
+
+
+    <!-- Lista todas as landing pages - somente visível para Eric -->
+    <?php if ($isEric): ?>
+        <h3>Landing Pages Criadas por Todos os Usuários</h3>
+        <ul>
+            <?php
+            $stmt = $pdo->query("SELECT lp.*, u.username FROM landing_pages lp JOIN users u ON lp.user_id = u.id");
+            while ($row = $stmt->fetch()):
+            ?>
+                <li>
+                    <strong><?= htmlspecialchars($row['username']) ?>:</strong>
+                    <a href="landing.php?usuario=<?= urlencode($row['username']) ?>">Ver Landing Page</a>
+                </li>
+            <?php endwhile; ?>
+        </ul>
+    <?php else: ?>
+        <h3>Minha landing page</h3>
+        <a href="landing.php">
+            <button>Criar minha landing page</button>
+        </a>
+        <a href="editar_landing.php">
+            <button>Editar Minha Landing Page</button>
+        </a>
+    <?php endif ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <!-- script -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -627,7 +1123,29 @@ $personalidade = $stmt->fetch(PDO::FETCH_ASSOC);
     </script>
 
 
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('graficoProgresso').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Concluídas', 'Pendentes'],
+                datasets: [{
+                    data: [<?= $concluidas ?>, <?= $totalMetas - $concluidas ?>],
+                    backgroundColor: ['#0064fa', '#64748b'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
