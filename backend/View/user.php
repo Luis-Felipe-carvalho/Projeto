@@ -635,9 +635,12 @@ $isEric = strtolower($username) === 'eric';
         <!-- Formulário "Quem Sou Eu?" -->
         <h3>Formulário "Quem Sou Eu"</h3>
         <?php if (!empty($perfil)): ?>
+            <br>
             <button class="btn" id="startForm">Refazer Formulário</button>
+            <br>
             <button class="btn" id="mostrarResultados">Exibir resultados do formulário</button>
         <?php else: ?>
+            <br>
             <button class="btn" id="startForm">Começar Formulário</button>
         <?php endif; ?>
 
