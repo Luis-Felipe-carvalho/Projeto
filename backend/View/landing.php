@@ -1,5 +1,5 @@
 <?php
-require 'C:\Turma2\xampp\htdocs\Projeto-de-vida\config.php';
+require 'C:\xampp\htdocs\Projeto-de-vida\config.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     echo "<p style='color: green;'>Landing page atualizada com sucesso!</p>";
-    
+
     // Recarregar dados atualizados
     $stmt = $pdo->prepare("SELECT * FROM landing_pages WHERE user_id = ?");
     $stmt->execute([$user_id]);
@@ -41,25 +41,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<h2>Editar Minha Landing Page</h2>
-<form method="POST">
-    <label>Título Principal</label>
-    <input type="text" name="titulo_principal" value="<?= htmlspecialchars($landing['titulo_principal'] ?? '') ?>"><br>
 
-    <label>Subtítulo</label>
-    <textarea name="subtitulo" rows="2"><?= htmlspecialchars($landing['subtitulo'] ?? '') ?></textarea><br>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-    <label>Sobre</label>
-    <textarea name="sobre" rows="4"><?= htmlspecialchars($landing['sobre'] ?? '') ?></textarea><br>
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Currículo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            color: #333;
+        }
 
-    <label>Educação</label>
-    <textarea name="educacao" rows="4"><?= htmlspecialchars($landing['educacao'] ?? '') ?></textarea><br>
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
 
-    <label>Carreira</label>
-    <textarea name="carreira" rows="4"><?= htmlspecialchars($landing['carreira'] ?? '') ?></textarea><br>
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
 
-    <label>Contato</label>
-    <textarea name="contato" rows="4"><?= htmlspecialchars($landing['contato'] ?? '') ?></textarea><br>
+        .subtitulo {
+            font-style: italic;
+            color: #555;
+        }
 
-    <button type="submit">Salvar Landing Page</button>
-</form>
+        .contato {
+            background-color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .topo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topo">
+        <h1><?= htmlspecialchars($landing['titulo_principal'] ?? 'Meu Currículo') ?></h1>
+        <p class="subtitulo"><?= htmlspecialchars($landing['subtitulo'] ?? '') ?></p>
+    </div>
+
+    <div class="section">
+        <h2>Sobre Mim</h2>
+        <p><?= nl2br(htmlspecialchars($landing['sobre'] ?? '')) ?></p>
+    </div>
+
+    <div class="section">
+        <h2>Educação</h2>
+        <p><?= nl2br(htmlspecialchars($landing['educacao'] ?? '')) ?></p>
+    </div>
+
+    <div class="section">
+        <h2>Carreira / Experiência</h2>
+        <p><?= nl2br(htmlspecialchars($landing['carreira'] ?? '')) ?></p>
+    </div>
+
+    <div class="section">
+        <h2>Contato</h2>
+        <div class="contato">
+            <?= nl2br(htmlspecialchars($landing['contato'] ?? '')) ?>
+        </div>
+    </div>
+
+</body>
+
+</html>
