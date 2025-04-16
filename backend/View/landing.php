@@ -1,5 +1,5 @@
 <?php
-require 'C:\xampp\htdocs\Projeto-de-vida\config.php';
+require 'C:\Turma2\xampp\htdocs\Projeto-de-vida\config.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
