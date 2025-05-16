@@ -17,28 +17,13 @@
             <nav>
                 <ul class="desktop-nav">
                     <li><a href="#Inicio">Início</a></li>
-                    <li><a href="#Sobre">Sobre</a></li>
-                    <li><a href="#Educacao">Educação</a></li>
-                    <li><a href="#Carreira">Carreira</a></li>
-                    <li><a href="#Contato">Contato</a></li>
-                    <li><a href="../login-google/includes/backend/View/profile.php">Perfil</a></li>
+                    <li><a href="#Perfil">Perfil</a></li>
                 </ul>
 
                 <button id="mobile-menu-btn" aria-label="Toggle menu">
                     <span>
                         <li><a href="#Inicio">Início</a></li>
                     </span>
-                    <span>
-                        <li><a href="#Sobre">Sobre</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Educacao">Educação</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Carreira">Carreira</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Contato">Contato</a></li>
                     </span>
                     <span>
                     <li><a href="Perfil.php">Perfil</a></li>
@@ -51,10 +36,6 @@
         <div id="mobile-menu">
             <ul>
                 <li><a href="#Inicio">Início</a></li>
-                <li><a href="#Sobre">Sobre</a></li>
-                <li><a href="#Educacao">Educação</a></li>
-                <li><a href="#Carreira">Carreira</a></li>
-                <li><a href="#Contato">Contato</a></li>
                 <li><a href="Perfil.php">Perfil</a></li>
             </ul>
         </div>

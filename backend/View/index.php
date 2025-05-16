@@ -45,17 +45,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <ul class="desktop-nav">
                     <?php if ($logged_in): ?>
                         <li><a href="index.php?#Inicio">Início</a></li>
-                        <li><a href="index.php?#Sobre">Sobre</a></li>
-                        <li><a href="index.php?#Educacao">Educação</a></li>
-                        <li><a href="index.php?#Carreira">Carreira</a></li>
-                        <li><a href="index.php?#Contato">Contato</a></li>
                         <li><a href="user.php">Perfil</a></li>
                     <?php else: ?>
                         <li><a href="index.php?#Inicio">Início</a></li>
-                        <li><a href="index.php?#Sobre">Sobre</a></li>
-                        <li><a href="index.php?#Educacao">Educação</a></li>
-                        <li><a href="index.php?#Carreira">Carreira</a></li>
-                        <li><a href="index.php?#Contato">Contato</a></li>
                         <li><a href="login.php">Login</a></li>
                     <?php endif; ?>
                 </ul>
@@ -63,18 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <button id="mobile-menu-btn" aria-label="Toggle menu">
                     <span>
                         <li><a href="#Inicio">Início</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Sobre">Sobre</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Educacao">Educação</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Carreira">Carreira</a></li>
-                    </span>
-                    <span>
-                        <li><a href="#Contato">Contato</a></li>
                     </span>
                     <span>
                         <li><a href="User.php">Perfil</a></li>
@@ -87,10 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div id="mobile-menu">
             <ul>
                 <li><a href="#Inicio">Início</a></li>
-                <li><a href="#Sobre">Sobre</a></li>
-                <li><a href="#Educacao">Educação</a></li>
-                <li><a href="#Carreira">Carreira</a></li>
-                <li><a href="#Contato">Contato</a></li>
                 <li><a href="Perfil.php">Perfil</a></li>
             </ul>
         </div>
@@ -99,13 +75,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <!-- Hero Section -->
     <section id="Inicio" class="hero">
         <div class="container">
-            <div class="tag">SESI/SENAI programador & Futuro Estudante de Ciência da Computação</div>
             <h1>
-                <span class="title-line">Criando um futuro com</span>
-                <span class="gradient-text">Programação & Inovação</span>
+                <span class="title-line">Projeto</span>
+                <span class="gradient-text">De Vida</span>
             </h1>
             <p class="subtitle">
-                Explorando o caminho do ensino médio ao desenvolvimento profissional, com foco na construção de uma carreira em ciência da computação e tecnologia.
+                Explorando o caminho do ensino médio ao desenvolvimento profissional.
             </p>
             <div class="buttons">
                 <a href="#Sobre" class="btn btn-primary">Sobre mim</a>
@@ -126,10 +101,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">SOBRE MIM</span>
-                <h2>Paixão por Tecnologia & <span class="gradient-text">Solução de Problemas</span></h2>
+                <h2>Engenharia Civil & <span class="gradient-text">Arquitetura</span></h2>
                 <p class="section-description">
-                    Sou um estudante dedicado de ciência da computação com profundo interesse em programação, desenvolvimento de software e nas infinitas possibilidades que a tecnologia oferece para melhorar nosso mundo.
-                </p>
+                   
             </div>
 
             <div class="features">
@@ -138,29 +112,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="icon-code"></div>
                     </div>
                     <h3>Programação</h3>
-                    <p>Aprender diversas linguagens de programação e frameworks para criar soluções inovadoras.</p>
+                    <p>Apesar de não ser o meu forte, estou achando interessante aprender sobre logica de programação.</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon">
                         <div class="icon-monitor"></div>
                     </div>
-                    <h3>Desenvolvimento Web</h3>
-                    <p>Criação de sites e aplicativos responsivos e fáceis de usar usando tecnologias modernas.</p>
+                    <h3>Engenharia Civil</h3>
+                    <p>se dedica ao planejamento, projeto, construção e manutenção de infraestruturas físicas e naturais, como edifícios, pontes, estradas, túneis, barragens e sistemas de saneamento.</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon">
                         <div class="icon-cpu"></div>
                     </div>
                     <h3>
-                        Engenharia de Software</h3>
-                    <p>Aplicar princípios de engenharia para projetar e desenvolver sistemas de software confiáveis.</p>
+                        Arquitetura</h3>
+                    <p> Se dedica ao planejamento, projeto e construção de edifícios e espaços urbanos, integrando aspectos funcionais, estéticos e técnicos.</p>
                 </div>
                 <div class="feature-card">
                     <div class="icon">
                         <div class="icon-book"></div>
                     </div>
-                    <h3>Aprendizagem Contínua</h3>
-                    <p>Expandindo constantemente meu conhecimento para me manter atualizado com tecnologias em rápida evolução.</p>
+                    <h3>Conhecimentos Necessarios</h3>
+                    <p>envolve uma combinação de conhecimentos teóricos e práticos, incluindo disciplinas como matemática, física, desenho técnico e, para arquitetos, também história da arte e urbanismo. </p>
                 </div>
             </div>
         </div>
@@ -193,14 +167,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                         <div class="timeline-item">
                             <div class="year">2025 - 2026</div>
-                            <h4>Advanced Placement Computer Science</h4>
+                            <h4>Engenharia Civil</h4>
                             <p>
-                                Planejando fazer cursos de Ciência da Computação AP para obter conhecimento de nível universitário sobre conceitos de programação e estruturas de dados.</p>
+                                Planejando fazer engenharia civil para obter conhecimento maior para exercer a função.</p>
                         </div>
                         <div class="timeline-item">
                             <div class="year">2026 - 2029</div>
-                            <h4>Bacharel em Ciência da Computação</h4>
-                            <p>Meta futura: cursar Bacharelado em Ciência da Computação ou área relacionada em uma universidade focada em tecnologia.</p>
+                            <h4>Bacharel em Engenharia Civil</h4>
+                            <p>Meta futura: cursar Engenharia Civil possivelmente em alguma faculdade do estado de SP.</p>
                         </div>
                     </div>
                 </div>
@@ -238,7 +212,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">ASPIRAÇÕES DE CARREIRA</span>
-                <h2>Construindo um Futuro em <span class="gradient-text">tecnologia</span></h2>
+                <h2>Construindo um Futuro em <span class="gradient-text">Engenharia</span></h2>
                 <p class="section-description">
                     Explorando possíveis caminhos de carreira no setor de tecnologia em constante evolução, com foco em inovação e resolução de problemas.
                 </p>
@@ -249,15 +223,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <div class="icon">
                         <div class="icon-laptop"></div>
                     </div>
-                    <h3>desenvolvedor de sistemas</h3>
-                    <p>Criar e manter aplicativos, sites e sistemas de software que resolvam problemas do mundo real e melhorem as experiências do usuário.</p>
-                    <div class="skills">
-                        <span class="skill-badge">Linguagens de programação</span>
-                        <span class="skill-badge">
-                            Arquitetura de Software</span>
-                        <span class="skill-badge">Depurando</span>
-                        <span class="skill-badge">Testando</span>
-                    </div>
+                    <h3> Infraestrutura Resiliente e Adaptativa</h3>
+                    <p>Com as mudanças climáticas e o aumento de desastres naturais, a capacidade de projetar e construir infraestruturas que resistam a esses eventos (como inundações, terremotos) é crucial.</p>
                 </div>
 
                 <div class="Carreira-card">
@@ -265,28 +232,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="icon-globe"></div>
                     </div>
                     <h3>
-                        Desenvolvedor Web</h3>
-                    <p>Projetar, implementar e manter infraestrutura de sistemas complexos, garantindo confiabilidade, escalabilidade e segurança.</p>
-                    <div class="skills">
-                        <span class="skill-badge">Front-end Frameworks</span>
-                        <span class="skill-badge">Back-end Development</span>
-                        <span class="skill-badge">UI/UX Design</span>
-                        <span class="skill-badge">Otimização de Performace</span>
-                    </div>
+                    Geotecnia</h3>
+                    <p> a geotecnia lida com a mecânica dos solos e rochas, sendo essencial para fundações, contenções, estabilidade de taludes e escavações. A demanda por especialistas nessa área tende a crescer continuamente.</p>
+                   
                 </div>
 
                 <div class="Carreira-card">
                     <div class="icon">
                         <div class="icon-server"></div>
                     </div>
-                    <h3>Engenheiro de Sistemas</h3>
-                    <p>Projetar, implementar e manter infraestrutura de sistemas complexos, garantindo confiabilidade, escalabilidade e segurança.</p>
-                    <div class="skills">
-                        <span class="skill-badge">Cloud Platforms</span>
-                        <span class="skill-badge">Networking</span>
-                        <span class="skill-badge">Segurança</span>
-                        <span class="skill-badge">DevOps</span>
-                    </div>
+                    <h3>Saneamento e Recursos Hídricos:</h3>
+                    <p>Com a crescente preocupação com a gestão da água e o saneamento básico, engenheiros civis com expertise em tratamento de água, esgoto, drenagem e gestão de recursos hídricos são cada vez mais necessários.</p>
+                    
                 </div>
 
                 <div class="Carreira-card">
@@ -294,25 +251,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="icon-code"></div>
                     </div>
                     <h3>
-                        Engenheiro de IA/ML</h3>
-                    <p>Desenvolver sistemas inteligentes que podem aprender com dados e tomar decisões ou fazer previsões, ultrapassando os limites do que é possível.</p>
-                    <div class="skills">
-                        <span class="skill-badge">Machine Learning</span>
-                        <span class="skill-badge">Data Science</span>
-                        <span class="skill-badge">Algorithm Design</span>
-                        <span class="skill-badge">Neural Networks</span>
-                    </div>
+                    Gerenciamento de Projetos</h3>
+                    <p>Da capacidade de gerenciar projetos complexos, coordenar equipes multidisciplinares e otimizar recursos é altamente valorizada no mercado.</p>
+                    
                 </div>
             </div>
 
             <div class="Carreira-plan">
                 <h3>Meu Plano de Desenvolvimento de Carreira</h3>
                 <ol>
-                    <li><span>1</span>Construir uma base sólida em fundamentos da ciência da computação durante o ensino médio</li>
-                    <li><span>2</span>Desenvolver projetos pessoais para aplicar conhecimentos teóricos e construir um portfólio</li>
-                    <li><span>3</span>Prosseguir com o ensino superior em ciência da computação ou área relacionada</li>
-                    <li><span>4</span>Ganhar experiência de estágio para entender as práticas do setor</li>
-                    <li><span>5</span>Especializar-se em uma área específica com base em interesses e demanda do setor</li>
+                    <li><span>1</span>Construir uma base sólida de conhecimento teórico e prático na Engenharia Civil.</li>
+                    <li><span>2</span>Ganhar experiência no mundo real da Engenharia Civil e aplicar o conhecimento teórico.</li>
+                    <li><span>3</span> Dominar as ferramentas e conhecimentos técnicos essenciais para a prática da Engenharia Civil.</li>
+                    <li><span>4</span>Aprimorar as habilidades interpessoais e de comunicação essenciais para o sucesso profissional.</li>
+                    <li><span>5</span>Criar uma rede de contatos que possa te abrir portas e te manter atualizado sobre o mercado.</li>
                 </ol>
             </div>
         </div>
@@ -325,7 +277,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <span class="section-tag">ENTRE EM CONTATO</span>
                 <h2><span class="gradient-text">Conecte-se</span> & colabore</h2>
                 <p class="section-description">
-                    Interessado em discutir sobre programação?, compartilhar recursos ou explorar potenciais colaborações? Eu adoraria ouvir de você.
+                    Interessado em discutir sobre Engenharia?, compartilhar recursos ou explorar potenciais colaborações? Eu adoraria ouvir de você.
                 </p>
             </div>
 
@@ -364,7 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <div class="icon-mail"></div>
                     <div>
                         <h4>Email</h4>
-                        <p>eric.palma@portalsesisp.org.br</p>
+                        <p>luisfelipecarvalho.sesisenai@gmail.com</p>
                     </div>
                 </div>
                 <div class="info-item">
@@ -376,7 +328,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
                 </div>
                 <div class="social-links">
-                    <a href="https://github.com/Eric-codecrypt" class="social-icon github"></a>
                     <a href="#" class="social-icon linkedin"></a>
                     <a href="#" class="social-icon twitter"></a>
                 </div>

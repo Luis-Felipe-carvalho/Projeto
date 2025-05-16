@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $p_fortes = $_POST['pontos_fortes'] ?? '';
         $p_fracos = $_POST['pontos_fracos'] ?? '';
         $valores = $_POST['valores'] ?? '';
-        $aptidoes = implode(', ', $_POST['aptidoes'] ?? []);
+        $aptidoes = $_POST['aptidoes'] ?? '';
         $rel_familia = $_POST['familia'] ?? '';
         $rel_amigos = $_POST['amigos'] ?? '';
         $rel_escola = $_POST['escola'] ?? '';
@@ -344,10 +344,7 @@ $isEric = strtolower($username) === 'eric';
             <nav>
                 <ul class="desktop-nav">
                     <li><a href="index.php">Início</a></li>
-                    <li><a href="index.php">Sobre</a></li>
-                    <li><a href="index.php">Educação</a></li>
-                    <li><a href="index.php">Carreira</a></li>
-                    <li><a href="index.php">Contato</a></li>
+
                     <li><a href="user.php">Perfil</a></li>
                 </ul>
             </nav>
@@ -355,170 +352,234 @@ $isEric = strtolower($username) === 'eric';
     </header>
     <!--perfil css-->
     <style>
+    body {
+        background-color:rgb(255, 252, 252); /* Light blue background */
+        margin: 0; /* Remove default body margin */
+        padding: 0; /* Remove default body padding */
+        box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
+    }
+
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 40px;
+        border-radius: 12px;
+        background-color:rgba(255, 255, 255, 0.45);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        font-family: 'Arial', sans-serif;
+        border: 1px solidrgb(115, 112, 112);
+    }
+
+    .profile-pic-container {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin-bottom: 25px;
+    }
+
+    .profile-pic-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid #5cb85c; /* Vibrant green */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    .profile-pic-container:hover img {
+        border-color: #4cae4c; /* Darker shade on hover */
+    }
+
+    .upload-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Darker overlay */
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        font-size: 16px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .profile-pic-container:hover .upload-overlay {
+        opacity: 1;
+    }
+
+    .upload-overlay label {
+        cursor: pointer;
+    }
+
+    #profile_picture {
+        display: none;
+    }
+
+    .upload-btn {
+        margin-top: 15px;
+        background-color: #007bff; /* Modern blue */
+        color: #fff;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .upload-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .user-info {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .user-info h2 {
+        margin: 15px 0 8px;
+        font-size: 22px;
+        color: #37474f; /* Dark grey */
+    }
+
+    .user-info input {
+        width: calc(100% - 22px);
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solidrgb(0, 0, 0);
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    .user-info input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn {
+        background-color: #28a745; /* Success green */
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        background-color: #1e7e34;
+    }
+
+    .logout-button {
+        margin-top: 25px;
+        background-color: #dc3545; /* Danger red */
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .logout-button:hover {
+        background-color: #c82333;
+    }
+
+    h3 {
+        margin-top: 35px;
+        font-size: 24px;
+        color: #37474f;
+        align-self: flex-start;
+        margin-bottom: 15px;
+    }
+
+    textarea {
+        width: calc(100% - 22px);
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solidrgb(57, 59, 61);
+        font-size: 16px;
+        resize: vertical;
+        margin-bottom: 20px;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    textarea:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .form-group {
+        background-color: #007bff; /* Modern blue */
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .form-group:hover {
+        background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            background-color: #e0f2f7; /* Light teal for smaller screens */
+        }
+
         .profile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 600px;
-            margin: 40px auto;
             padding: 30px;
-            border-radius: 16px;
-            background-color: #f4f6fa;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px auto;
         }
 
         .profile-pic-container {
-            position: relative;
-            width: 160px;
-            height: 160px;
+            width: 120px;
+            height: 120px;
             margin-bottom: 20px;
         }
 
-        .profile-pic-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid #4a90e2;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
         .upload-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.6);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
             font-size: 14px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .profile-pic-container:hover .upload-overlay {
-            opacity: 1;
-        }
-
-        .upload-overlay label {
-            cursor: pointer;
-        }
-
-        #profile_picture {
-            display: none;
-        }
-
-        .upload-btn {
-            margin-top: 10px;
-            background-color: #4a90e2;
-            color: #fff;
-            padding: 8px 14px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .upload-btn:hover {
-            background-color: #357abd;
-        }
-
-        .user-info {
-            width: 100%;
-            margin-top: 10px;
         }
 
         .user-info h2 {
-            margin: 12px 0 6px;
-            font-size: 18px;
-            color: #333;
+            font-size: 20px;
         }
 
-        .user-info input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+        .user-info input,
+        textarea,
+        .btn,
+        .logout-button,
+        .form-group,
+        .upload-btn {
             font-size: 15px;
-        }
-
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #3e8e41;
-        }
-
-        .logout-button {
-            margin-top: 20px;
-            background-color: #e74c3c;
-            color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .logout-button:hover {
-            background-color: #c0392b;
+            padding: 10px 15px;
         }
 
         h3 {
-            margin-top: 40px;
-            font-size: 20px;
-            color: #333;
-            align-self: flex-start;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-            resize: vertical;
+            font-size: 22px;
+            margin-top: 30px;
             margin-bottom: 12px;
         }
-
-        .form-group {
-            background-color: #4a90e2;
-            color: white;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .form-group:hover {
-            background-color: #357abd;
-        }
-
-        @media (max-width: 600px) {
-            .profile-container {
-                padding: 20px;
-            }
-
-            .profile-pic-container {
-                width: 120px;
-                height: 120px;
-            }
-        }
-    </style>
+    }
+</style></h3>
 
     <section class="profile-container">
         <div class="profile-pic-container">
@@ -677,11 +738,9 @@ $isEric = strtolower($username) === 'eric';
             foreach ($perguntas as $campo => $texto) {
                 echo "<div class='question' id='q$index'>";
                 echo "<label for='$campo'>$texto</label>";
-                if ($campo === 'aptidoes') {
-                    echo "<input type='text' name='aptidoes[]' value='" . htmlspecialchars($perfil['principais_aptidoes'] ?? '') . "'>";
-                } else {
+               
                     echo "<textarea name='$campo'>" . htmlspecialchars($perfil[$campo] ?? '') . "</textarea>";
-                }
+                
                 echo "</div>";
                 $index++;
             }
@@ -969,13 +1028,6 @@ voltar-ao-ponto
             <?php endwhile; ?>
         </ul>
     <?php else: ?>
-        <h3>Minha landing page</h3>
-        <a href="landing.php">
-            <button>Criar minha landing page</button>
-        </a>
-        <a href="editar_landing.php">
-            <button>Editar Minha Landing Page</button>
-        </a>
     <?php endif ?>
 
 
