@@ -107,9 +107,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <form method="POST">
                     <input required type="text" name="username" placeholder="nome de usuário">
                     <br>
-                    <input required type="password" name="password" placeholder="senha">
+                     <input required="@gmail.com" type="text" name="email" placeholder="email">
                     <br>
-                    <input required="@gmail.com" type="text" name="email" placeholder="email">
+                     <input required type="password" name="password" placeholder="senha">
                     <br>
 
 

@@ -352,12 +352,6 @@ $isEric = strtolower($username) === 'eric';
     </header>
     <!--perfil css-->
     <style>
-    body {
-        background-color:rgb(255, 252, 252); /* Light blue background */
-        margin: 0; /* Remove default body margin */
-        padding: 0; /* Remove default body padding */
-        box-sizing: border-box; /* Ensure padding and border are included in element's total width and height */
-    }
 
     .profile-container {
         display: flex;
@@ -367,7 +361,7 @@ $isEric = strtolower($username) === 'eric';
         margin: 40px auto;
         padding: 40px;
         border-radius: 12px;
-        background-color:rgba(255, 255, 255, 0.45);
+        background-color:rgba(255, 255, 255, 1);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         font-family: 'Arial', sans-serif;
         border: 1px solidrgb(115, 112, 112);

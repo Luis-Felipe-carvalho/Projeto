@@ -1,8 +1,8 @@
 /* Base Styles */
 :root {
-    --background: #fafcfe;
-    --foreground: #1a1c1e;
-    --primary: #0064fa;
+    --background: hsl(210, 48%, 74%);
+    --foreground: #313233;
+    --primary: #1b2433;
     --primary-foreground: #f8fafc;
     --secondary: #f1f5fa;
     --secondary-foreground: #1a1c1e;
